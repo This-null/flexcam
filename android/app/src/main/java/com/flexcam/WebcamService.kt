@@ -27,7 +27,11 @@ class WebcamService : LifecycleService() {
 
         capture = CameraCapture(this, this)
         capture.start()
-        server = MjpegServer(Config.PORT) { capture.latestJpeg() }.also { it.start() }
+        server = MjpegServer(
+            Config.PORT,
+            { capture.latestJpeg() },
+            { cmd -> if (cmd == "stop") capture.pause() else capture.resume() },
+        ).also { it.start() }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {

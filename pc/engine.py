@@ -25,12 +25,23 @@ def _stream(host, timeout=2):
             yield jpeg
 
 
+def _control(host, cmd):
+    try:
+        conn = HTTPConnection(host, PORT, timeout=1.5)
+        conn.request("GET", "/" + cmd)
+        conn.getresponse().read()
+        conn.close()
+    except Exception:
+        pass
+
+
 class FlexCamEngine:
     def __init__(self, wifi_ip=None, on_status=None):
         self._wifi_ip = wifi_ip
         self._on_status = on_status or (lambda *a: None)
         self._thread = None
         self._running = False
+        self._active_host = None
 
     def is_running(self):
         return self._running
@@ -84,11 +95,13 @@ class FlexCamEngine:
                     if src["usb"]:
                         if not adb_tools.ensure_forward():
                             continue
+                    _control(src["host"], "start")
                     for jpeg in _stream(src["host"]):
                         if not self._running:
                             break
                         if active != src["name"]:
                             active = src["name"]
+                            self._active_host = src["host"]
                             self._on_status("connected", active, "")
                         cam.send(jpeg_to_rgb(jpeg))
                     active = None
@@ -100,6 +113,9 @@ class FlexCamEngine:
                     time.sleep(1)
         finally:
             cam.close()
+            if self._active_host:
+                _control(self._active_host, "stop")
+                self._active_host = None
             self._running = False
             self._on_status("stopped", None, "")
 

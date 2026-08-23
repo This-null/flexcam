@@ -8,6 +8,7 @@ import kotlin.concurrent.thread
 class MjpegServer(
     private val port: Int,
     private val frameSource: () -> ByteArray?,
+    private val control: (String) -> Unit = {},
 ) {
     @Volatile private var running = false
     private var server: ServerSocket? = null
@@ -44,6 +45,15 @@ class MjpegServer(
     private fun serve(client: Socket) {
         try {
             client.use {
+                val requestLine = it.getInputStream().bufferedReader().readLine() ?: ""
+                val path = requestLine.split(" ").getOrNull(1) ?: "/"
+                if (path.startsWith("/stop") || path.startsWith("/start")) {
+                    control(if (path.startsWith("/stop")) "stop" else "start")
+                    val ok = "HTTP/1.0 200 OK\r\nContent-Length: 2\r\n\r\nOK"
+                    it.getOutputStream().write(ok.toByteArray())
+                    it.getOutputStream().flush()
+                    return
+                }
                 val out = BufferedOutputStream(it.getOutputStream())
                 val header = "HTTP/1.0 200 OK\r\n" +
                     "Cache-Control: no-cache\r\n" +

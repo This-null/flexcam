@@ -31,8 +31,20 @@ class CameraCapture(
     private var orientationListener: OrientationEventListener? = null
 
     private var lensFacing = CameraSelector.LENS_FACING_BACK
+    @Volatile private var paused = false
 
-    fun latestJpeg(): ByteArray? = latest.get()
+    fun latestJpeg(): ByteArray? = if (paused) null else latest.get()
+
+    fun pause() {
+        paused = true
+        latest.set(null)
+        ContextCompat.getMainExecutor(context).execute { provider?.unbindAll() }
+    }
+
+    fun resume() {
+        paused = false
+        ContextCompat.getMainExecutor(context).execute { bindCurrent() }
+    }
 
     fun isFront(): Boolean = lensFacing == CameraSelector.LENS_FACING_FRONT
 
@@ -74,10 +86,11 @@ class CameraCapture(
                 val rotation = if (!autoRotate) {
                     Surface.ROTATION_0
                 } else when (orientation) {
-                    in 45 until 135 -> Surface.ROTATION_270
-                    in 135 until 225 -> Surface.ROTATION_180
-                    in 225 until 315 -> Surface.ROTATION_90
-                    else -> Surface.ROTATION_0
+                    in 60 until 120 -> Surface.ROTATION_270
+                    in 150 until 210 -> Surface.ROTATION_180
+                    in 240 until 300 -> Surface.ROTATION_90
+                    in 330..360, in 0 until 30 -> Surface.ROTATION_0
+                    else -> return
                 }
                 if (a.targetRotation != rotation) {
                     a.targetRotation = rotation
