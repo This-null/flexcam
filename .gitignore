@@ -1,0 +1,31 @@
+# Python
+pc/.venv/
+__pycache__/
+*.pyc
+pc/build/
+pc/dist/
+*.spec
+
+# Build-time duplicated assets (canonical copies live in release/)
+pc/FlexCam.apk
+pc/flexcam-logo.png
+
+# Local previews / scratch
+pc/*_preview*.png
+pc/exe_*.png
+pc/webview_test.png
+pc/test_*.png
+pc/test_*.jpg
+release/flexcam-logo-1024.png
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/app/bin/
+android/local.properties
+android/.idea/
+*.iml
+
+# Internal planning docs (not for the public repo)
+docs/superpowers/

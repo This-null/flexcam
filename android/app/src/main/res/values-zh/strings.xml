@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FlexCam</string>
+    <string name="app_tagline">把手机当作网络摄像头 — USB 或 WiFi</string>
+    <string name="status_title">FlexCam</string>
+    <string name="btn_start">开始</string>
+    <string name="btn_stop">停止</string>
+    <string name="btn_switch">前置 / 后置</string>
+    <string name="status_running">正在端口 %1$d 直播\n可以关闭屏幕，串流会继续。</string>
+    <string name="status_stopped">FlexCam 已关闭。点按“开始”。</string>
+    <string name="status_perm_denied">相机权限被拒绝</string>
+    <string name="hint_with_ip">在电脑上 (FlexCam)：\nWiFi IP: %1$s\n端口: %2$d</string>
+    <string name="hint_no_ip">在电脑上 (FlexCam)\n端口: %1$d</string>
+    <string name="notif_title">FlexCam 正在运行</string>
+    <string name="notif_text">端口 %1$d — USB / WiFi 直播</string>
+</resources>

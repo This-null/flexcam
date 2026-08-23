@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="28dp"
+        android:paddingVertical="44dp">
+
+        <ImageView
+            android:layout_width="88dp"
+            android:layout_height="88dp"
+            android:src="@mipmap/ic_launcher"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:text="@string/app_name"
+            android:textColor="@color/fg"
+            android:textSize="26sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/app_tagline"
+            android:textColor="@color/muted"
+            android:textSize="13sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/bg_card"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:letterSpacing="0.08"
+                android:text="@string/status_caption"
+                android:textColor="@color/muted"
+                android:textSize="10sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/statusDot"
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:background="@drawable/dot" />
+
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/status_title"
+                    android:textColor="@color/fg"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/hintText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:textColor="@color/muted"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/toggleButton"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="28dp"
+            android:background="@drawable/bg_primary"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_stop"
+            android:textAllCaps="false"
+            android:textColor="@color/fg"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/switchButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_secondary"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_switch"
+            android:textAllCaps="false"
+            android:textColor="@color/fg"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/langButton"
+            android:layout_width="match_parent"
+            android:layout_height="46dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_secondary"
+            android:stateListAnimator="@null"
+            android:text="🌐"
+            android:textAllCaps="false"
+            android:textColor="@color/fg"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <Button
+                android:id="@+id/btnGithub"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_secondary"
+                android:drawableTop="@drawable/ic_github"
+                android:drawablePadding="5dp"
+                android:paddingVertical="10dp"
+                android:stateListAnimator="@null"
+                android:text="GitHub"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/btnDiscord"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_secondary"
+                android:drawableTop="@drawable/ic_discord"
+                android:drawablePadding="5dp"
+                android:paddingVertical="10dp"
+                android:stateListAnimator="@null"
+                android:text="Discord"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/btnInsta"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_secondary"
+                android:drawableTop="@drawable/ic_instagram"
+                android:drawablePadding="5dp"
+                android:paddingVertical="10dp"
+                android:stateListAnimator="@null"
+                android:text="Insta"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="10sp" />
+
+            <Button
+                android:id="@+id/btnDonate"
+                android:layout_width="0dp"
+                android:layout_height="66dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_primary"
+                android:drawableTop="@drawable/ic_coffee"
+                android:drawablePadding="5dp"
+                android:paddingVertical="10dp"
+                android:stateListAnimator="@null"
+                android:text="Destek"
+                android:textAllCaps="false"
+                android:textColor="@color/fg"
+                android:textSize="10sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:text="v1.0.0"
+            android:textColor="@color/muted"
+            android:textSize="11sp" />
+    </LinearLayout>
+</ScrollView>

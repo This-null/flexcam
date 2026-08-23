@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FlexCam</string>
+    <string name="app_tagline">Votre téléphone en webcam — USB ou WiFi</string>
+    <string name="status_title">FlexCam</string>
+    <string name="btn_start">Démarrer</string>
+    <string name="btn_stop">Arrêter</string>
+    <string name="btn_switch">Avant / Arrière</string>
+    <string name="status_running">En direct sur le port %1$d\nVous pouvez éteindre l\'écran, le flux continue.</string>
+    <string name="status_stopped">FlexCam est éteint. Touchez \'Démarrer\'.</string>
+    <string name="status_perm_denied">Autorisation caméra refusée</string>
+    <string name="hint_with_ip">Sur PC (FlexCam) :\nIP WiFi : %1$s\nPort : %2$d</string>
+    <string name="hint_no_ip">Sur PC (FlexCam)\nPort : %1$d</string>
+    <string name="notif_title">FlexCam est actif</string>
+    <string name="notif_text">Port %1$d — USB / WiFi en direct</string>
+</resources>

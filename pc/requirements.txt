@@ -1,0 +1,6 @@
+numpy
+pillow
+pyvirtualcam
+pystray
+pywebview
+pypresence

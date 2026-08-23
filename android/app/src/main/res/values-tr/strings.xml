@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">FlexCam</string>
+    <string name="status_title">FlexCam</string>
+    <string name="status_caption">BAĞLANTI</string>
+    <string name="btn_start">Aç</string>
+    <string name="btn_stop">Kapat</string>
+    <string name="btn_switch">Ön / Arka</string>
+    <string name="status_running">Yayın açık: port %1$d\nEkranı kapatabilirsin, yayın sürer.</string>
+    <string name="status_stopped">Kapalı — başlatmak için Aç</string>
+    <string name="status_perm_denied">Kamera izni reddedildi</string>
+    <string name="hint_with_ip">PC\'de FlexCam:\nWiFi IP: %1$s\nPort: %2$d</string>
+    <string name="hint_no_ip">PC\'de FlexCam\nPort: %1$d</string>
+    <string name="notif_title">FlexCam çalışıyor</string>
+    <string name="notif_text">Port %1$d — USB / WiFi yayında</string>
+</resources>

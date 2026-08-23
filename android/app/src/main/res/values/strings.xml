@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">FlexCam</string>
+    <string name="app_tagline">Your phone as a webcam — USB or WiFi</string>
+    <string name="status_title">FlexCam</string>
+    <string name="status_caption">CONNECTION</string>
+    <string name="btn_start">Start</string>
+    <string name="btn_stop">Stop</string>
+    <string name="btn_switch">Front / Back</string>
+    <string name="status_running">Live on port %1$d\nYou can turn the screen off, streaming continues.</string>
+    <string name="status_stopped">Off — tap Start</string>
+    <string name="status_perm_denied">Camera permission denied</string>
+    <string name="hint_with_ip">On PC (FlexCam):\nWiFi IP: %1$s\nPort: %2$d</string>
+    <string name="hint_no_ip">On PC (FlexCam)\nPort: %1$d</string>
+    <string name="notif_title">FlexCam is running</string>
+    <string name="notif_text">Port %1$d — USB / WiFi live</string>
+</resources>
