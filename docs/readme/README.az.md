@@ -16,34 +16,70 @@
 
 ---
 
-> [!CAUTION]
-> **FlexCam üçün [OBS Studio](https://obsproject.com/download) quraşdırılmalıdır.**
-> Telefonu veb-kamera kimi göstərmək üçün OBS Virtual Camera sürücüsündən istifadə edir.
-> OBS-i bir dəfə quraşdır — açıq saxlamağa ehtiyac yoxdur.
-
----
-
 ## Nədir
 
-FlexCam Android telefonunun kamerasını PC-yə ötürür və onu **"OBS Virtual
-Camera"** kimi göstərir; beləliklə istənilən tətbiq (Zoom, Teams, Discord,
-brauzer, OBS) onu veb-kamera kimi seçə bilər. **USB** (ADB) və **WiFi** üzərindən
-işləyir və biri kəsilsə avtomatik digərinə keçir.
+FlexCam Android telefonunun kamerasını PC-yə ötürür və onu **virtual veb-kamera**
+kimi göstərir; beləliklə istənilən tətbiq (Zoom, Teams, Discord, brauzer, OBS)
+onu kamera kimi seçə bilər. **USB** (ADB) və **WiFi** üzərindən işləyir və biri
+kəsilsə avtomatik digərinə keçir.
 
 - Hibrid **USB + WiFi**, avtomatik keçid
 - Telefon hazır olanda **avtomatik qoşulur**
-- **Ön / arxa** kamera dəyişimi
-- **Avtomatik dik/üfüqi**
+- Telefonda və PC-də **canlı önizləmə**
+- **Ön / arxa** kamera, **avtomatik dik/üfüqi**
 - **Ekran bağlı** ikən yayım davam edir
-- **10 dil**, qaranlıq interfeys
-- Tamamilə cihazında işləyir — **heç bir məlumat çıxmır**
+- **WiFi giriş kodu** — şəbəkədəki yad adamlar yayımı görə bilməz
+- **10 dil**, qaranlıq interfeys, trey dəstəyi
+- Tamamilə cihazında işləyir — **heç bir məlumat kompüterindən çıxmır**
+
+## Virtual kamera sürücüsü
+
+FlexCam PC-də virtual kameraya ehtiyac duyur. İki seçimin var:
+
+- **Daxili sürücü (OBS lazım deyil):** İlk açılışda virtual kamera tapılmasa,
+  tətbiqdə **"Virtual kamera quraşdır"** düyməsinə bas. Kiçik, açıq mənbəli bir
+  sürücünü ([Unity Capture](https://github.com/schellingb/UnityCapture), MIT)
+  bir dəfəlik admin icazəsi ilə qeydiyyatdan keçirir.
+- **OBS Studio:** Artıq [OBS](https://obsproject.com/download) quraşdırılıbsa,
+  FlexCam onun virtual kamerasını avtomatik istifadə edir.
 
 ## Sürətli başlanğıc
 
-1. **OBS Studio** quraşdır (bir dəfə).
-2. Telefonda: `release/FlexCam.apk` quraşdır və tətbiqi aç.
-3. PC-də: **FlexCam**-i işə sal — özü qoşulur.
-4. Video tətbiqində kamera olaraq **"OBS Virtual Camera"** seç.
+1. **Telefon:** `FlexCam.apk`-ı quraşdır və tətbiqi aç.
+2. **PC:** **FlexCam-Windows.zip**-i aç və `FlexCam.exe`-ni işə sal.
+   - İlk açılış: soruşulsa **"Virtual kamera quraşdır"**a bas (bir dəfəlik).
+3. USB üzərindən **avtomatik qoşulur**. WiFi üçün telefonun IP-sini və tətbiqdə
+   göstərilən **giriş kodunu** yaz.
+4. Video tətbiqində kamera olaraq **"OBS Virtual Camera"** (daxili sürücü ilə
+   **"Unity Video Capture"**) seç.
+
+> USB üçün **USB debugging** aktiv olmalıdır (Developer Options). WiFi kabel
+> tələb etmir.
+
+## Mənbədən qurmaq
+
+**Android (APK):**
+```
+cd android
+gradlew assembleDebug
+```
+> JDK 17 tələb olunur.
+
+**PC (masaüstü tətbiqi):**
+```
+cd pc
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python webgui.py
+```
+
+Müstəqil `.exe` PyInstaller (onedir) ilə — ingilis README-dəki əmrə bax.
+
+## Texnologiya
+
+- **Android:** Kotlin, CameraX, `8474` portunda MJPEG server.
+- **PC:** Python, pywebview interfeys, `pyvirtualcam` → OBS və ya Unity Capture.
+- **Ötürmə:** `adb forward` (USB) və ya telefonun IP-si (WiFi) üzərindən xam TCP.
 
 ## Lisenziya
 

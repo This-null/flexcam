@@ -9,6 +9,7 @@ class MjpegServer(
     private val port: Int,
     private val frameSource: () -> ByteArray?,
     private val control: (String) -> Unit = {},
+    private val authKey: String = "",
 ) {
     @Volatile private var running = false
     private var server: ServerSocket? = null
@@ -46,7 +47,24 @@ class MjpegServer(
         try {
             client.use {
                 val requestLine = it.getInputStream().bufferedReader().readLine() ?: ""
-                val path = requestLine.split(" ").getOrNull(1) ?: "/"
+                val target = requestLine.split(" ").getOrNull(1) ?: "/"
+                val path = target.substringBefore("?")
+                val query = target.substringAfter("?", "")
+
+                val loopback = it.inetAddress?.isLoopbackAddress ?: false
+                if (!loopback && authKey.isNotEmpty()) {
+                    val key = query.split("&")
+                        .firstOrNull { q -> q.startsWith("key=") }
+                        ?.substringAfter("key=") ?: ""
+                    if (key != authKey) {
+                        it.getOutputStream().write(
+                            "HTTP/1.0 403 Forbidden\r\nContent-Length: 9\r\n\r\nForbidden".toByteArray()
+                        )
+                        it.getOutputStream().flush()
+                        return
+                    }
+                }
+
                 if (path.startsWith("/stop") || path.startsWith("/start")) {
                     control(if (path.startsWith("/stop")) "stop" else "start")
                     val ok = "HTTP/1.0 200 OK\r\nContent-Length: 2\r\n\r\nOK"

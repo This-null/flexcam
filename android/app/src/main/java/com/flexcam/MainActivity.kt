@@ -4,12 +4,15 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
+import kotlin.concurrent.thread
 import androidx.core.content.ContextCompat.getColor
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -58,11 +61,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         val ip = wifiIp()
-        findViewById<TextView>(R.id.hintText).text = if (ip != null) {
+        val base = if (ip != null) {
             getString(R.string.hint_with_ip, ip, Config.PORT)
         } else {
             getString(R.string.hint_no_ip, Config.PORT)
         }
+        findViewById<TextView>(R.id.hintText).text =
+            base + "\n" + getString(R.string.access_code, Pin.get(this))
 
         findViewById<Button>(R.id.btnGithub).setOnClickListener { open(Config.GITHUB_URL) }
         findViewById<Button>(R.id.btnDiscord).setOnClickListener { open(Config.DISCORD_URL) }
@@ -111,6 +116,34 @@ class MainActivity : AppCompatActivity() {
     override fun onWindowFocusChanged(hasFocus: Boolean) {
         super.onWindowFocusChanged(hasFocus)
         if (hasFocus && !userStopped) maybeStartService()
+    }
+
+    @Volatile private var previewing = false
+
+    override fun onResume() {
+        super.onResume()
+        if (previewing) return
+        previewing = true
+        val view = findViewById<ImageView>(R.id.preview)
+        thread(name = "preview") {
+            while (previewing) {
+                val j = FrameBus.jpeg
+                if (j != null) {
+                    val bmp = try {
+                        BitmapFactory.decodeByteArray(j, 0, j.size)
+                    } catch (_: Exception) {
+                        null
+                    }
+                    if (bmp != null) runOnUiThread { view.setImageBitmap(bmp) }
+                }
+                Thread.sleep(66)
+            }
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        previewing = false
     }
 
     private fun requestPermissions() {

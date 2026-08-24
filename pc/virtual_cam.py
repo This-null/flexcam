@@ -26,7 +26,17 @@ class VirtualCamera:
     def __init__(self, width: int = 1280, height: int = 720, fps: int = 30):
         self._w = width
         self._h = height
-        self._cam = pyvirtualcam.Camera(width=width, height=height, fps=fps)
+        self._cam = None
+        for backend in ("obs", "unitycapture"):
+            try:
+                self._cam = pyvirtualcam.Camera(
+                    width=width, height=height, fps=fps, backend=backend
+                )
+                break
+            except Exception:
+                continue
+        if self._cam is None:
+            self._cam = pyvirtualcam.Camera(width=width, height=height, fps=fps)
 
     @property
     def device(self) -> str:

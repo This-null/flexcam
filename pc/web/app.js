@@ -70,7 +70,7 @@ async function setLang(code) {
   S = r.strings;
   CFG.lang = r.lang;
   applyStrings();
-  refreshObs(CFG.obs_installed);
+  refreshVcam();
   setLangButton(CFG.langs, r.lang);
   buildLangMenu(CFG.langs, r.lang);
   pollUsb();
@@ -80,6 +80,8 @@ async function setLang(code) {
 function setStatus(state, info) {
   lastState = state;
   lastInfo = info;
+  const pc = document.querySelector(".preview-card");
+  if (pc) pc.classList.toggle("live", state === "connected");
   const dot = $("dot");
   dot.className = "dot " + (state || "");
   let text;
@@ -105,14 +107,14 @@ function setLog(text, cls) {
   l.className = "log " + (cls || "");
 }
 
-function refreshObs(installed) {
+function refreshVcam() {
   const label = $("obsLabel");
   const btn = $("obsBtn");
-  if (installed) {
-    label.textContent = "✓ " + S.obs_ready;
+  if (CFG.vcam_ready) {
+    label.textContent = "✓ " + S.vcam_ready;
     btn.classList.remove("warn");
   } else {
-    label.textContent = S.install_obs;
+    label.textContent = S.install_vcam;
     btn.classList.add("warn");
   }
 }
@@ -124,7 +126,7 @@ async function init() {
   applyStrings();
   $("versionLbl").textContent = "v" + boot.version;
   $("trayChk").checked = !!boot.tray;
-  refreshObs(boot.obs_installed);
+  refreshVcam();
   setRunning(boot.running);
 
   setLangButton(boot.langs, boot.lang);
@@ -140,7 +142,19 @@ async function init() {
   $("navDiscord").onclick = () => window.pywebview.api.open_url(CFG.discord);
   $("navInsta").onclick = () => window.pywebview.api.open_url(CFG.instagram);
   $("navDonate").onclick = () => window.pywebview.api.open_url(CFG.donate);
-  $("obsBtn").onclick = () => window.pywebview.api.open_url(CFG.obs_url);
+  $("obsBtn").onclick = async () => {
+    if (CFG.vcam_ready) return;
+    if (CFG.has_installer) {
+      setLog(S.vcam_installing, "");
+      const ok = await window.pywebview.api.install_virtualcam();
+      if (ok) {
+        CFG.vcam_ready = true;
+        refreshVcam();
+      }
+    } else {
+      window.pywebview.api.open_url(CFG.obs_url);
+    }
+  };
   $("trayChk").onchange = (e) =>
     window.pywebview.api.save_setting("tray", e.target.checked);
 
@@ -151,7 +165,7 @@ async function init() {
     } else {
       setRunning(true);
       setStatus("starting", null);
-      window.pywebview.api.start($("wifiIp").value.trim());
+      window.pywebview.api.start($("wifiIp").value.trim(), $("wifiKey").value.trim());
     }
   };
 
@@ -175,10 +189,12 @@ async function init() {
   pollUsb();
   setInterval(pollUsb, 3000);
 
+  $("previewImg").src = "http://127.0.0.1:8475/preview";
   $("wifiIp").value = boot.wifi_ip || "";
+  $("wifiKey").value = boot.wifi_key || "";
   setRunning(true);
   setStatus("starting", null);
-  window.pywebview.api.start(boot.wifi_ip || "");
+  window.pywebview.api.start(boot.wifi_ip || "", boot.wifi_key || "");
 }
 
 window.flexStatus = setStatus;

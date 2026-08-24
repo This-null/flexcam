@@ -11,6 +11,7 @@ import sysutil
 import config
 import i18n
 import presence
+import preview_server
 
 
 def base_dir():
@@ -57,9 +58,12 @@ class Api:
             "obs_url": config.OBS_DOWNLOAD_URL,
             "version": config.APP_VERSION,
             "obs_installed": sysutil.obs_installed(),
+            "vcam_ready": sysutil.obs_installed() or self.settings.get("vcam_installed", False),
+            "has_installer": sysutil.virtualcam_installer() is not None,
             "tray": self.settings.get("tray", True),
             "running": self.engine.is_running(),
             "wifi_ip": self.settings.get("wifi_ip", ""),
+            "wifi_key": self.settings.get("wifi_key", ""),
         }
 
     def set_lang(self, lang):
@@ -68,12 +72,14 @@ class Api:
         sysutil.save_settings(self.settings)
         return {"strings": self._strings(), "lang": self.t.lang}
 
-    def start(self, ip):
+    def start(self, ip, key=""):
         ip = (ip or "").strip()
-        if ip:
-            self.settings["wifi_ip"] = ip
-            sysutil.save_settings(self.settings)
-        self.engine.set_wifi_ip(ip or self.settings.get("wifi_ip") or None)
+        key = (key or "").strip()
+        self.settings["wifi_ip"] = ip
+        self.settings["wifi_key"] = key
+        sysutil.save_settings(self.settings)
+        self.engine.set_wifi_ip(ip or None)
+        self.engine.set_key(key)
         self.engine.start()
 
     def stop(self):
@@ -85,6 +91,13 @@ class Api:
 
     def open_url(self, url):
         sysutil.open_url(url)
+
+    def install_virtualcam(self):
+        ok = sysutil.install_virtualcam()
+        if ok:
+            self.settings["vcam_installed"] = True
+            sysutil.save_settings(self.settings)
+        return ok
 
     def usb_connected(self):
         return adb_tools.detect_device() is not None
@@ -170,12 +183,13 @@ def main():
     api = Api()
     window = webview.create_window(
         "FlexCam", url=web_index(), js_api=api,
-        width=760, height=520, min_size=(680, 480),
+        width=1120, height=760, min_size=(900, 640),
         background_color="#14161f",
     )
     _WINDOW = window
     tray = TrayHolder(api, window)
     window.events.closing += tray.on_closing
+    preview_server.PreviewServer(lambda: api.engine.preview_jpeg()).start()
     presence.start()
     webview.start()
 

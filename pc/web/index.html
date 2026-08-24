@@ -78,6 +78,11 @@
   <main class="main">
     <p class="tagline" id="tagline">Turn your phone into a webcam</p>
 
+    <div class="preview-card">
+      <img id="previewImg" class="preview-img" alt="">
+      <span class="preview-dot"></span>
+    </div>
+
     <div class="status-card">
       <span class="status-caption" id="statusCaption">Connection</span>
       <div class="status-main">
@@ -93,7 +98,10 @@
 
     <div class="field">
       <label id="wifiLabel">WiFi IP (optional)</label>
-      <input type="text" id="wifiIp" placeholder="192.168.1.x">
+      <div class="ip-row">
+        <input type="text" id="wifiIp" placeholder="192.168.1.x">
+        <input type="text" id="wifiKey" placeholder="Kod" maxlength="8">
+      </div>
     </div>
 
     <button class="primary" id="toggleBtn">Start</button>

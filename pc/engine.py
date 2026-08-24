@@ -9,9 +9,13 @@ import adb_tools
 PORT = 8474
 
 
-def _stream(host, timeout=2):
+def _q(key):
+    return f"?key={key}" if key else ""
+
+
+def _stream(host, key="", timeout=2):
     conn = HTTPConnection(host, PORT, timeout=timeout)
-    conn.request("GET", "/")
+    conn.request("GET", "/" + _q(key))
     resp = conn.getresponse()
     if resp.status != 200:
         raise RuntimeError(f"HTTP {resp.status}")
@@ -25,10 +29,10 @@ def _stream(host, timeout=2):
             yield jpeg
 
 
-def _control(host, cmd):
+def _control(host, cmd, key=""):
     try:
         conn = HTTPConnection(host, PORT, timeout=1.5)
-        conn.request("GET", "/" + cmd)
+        conn.request("GET", "/" + cmd + _q(key))
         conn.getresponse().read()
         conn.close()
     except Exception:
@@ -42,12 +46,20 @@ class FlexCamEngine:
         self._thread = None
         self._running = False
         self._active_host = None
+        self._key = ""
+        self._preview_jpeg = None
 
     def is_running(self):
         return self._running
 
+    def preview_jpeg(self):
+        return self._preview_jpeg
+
     def set_wifi_ip(self, ip):
         self._wifi_ip = ip
+
+    def set_key(self, key):
+        self._key = (key or "").strip()
 
     def start(self):
         if self._running:
@@ -95,26 +107,29 @@ class FlexCamEngine:
                     if src["usb"]:
                         if not adb_tools.ensure_forward():
                             continue
-                    _control(src["host"], "start")
-                    for jpeg in _stream(src["host"]):
+                    _control(src["host"], "start", self._key)
+                    for jpeg in _stream(src["host"], self._key):
                         if not self._running:
                             break
                         if active != src["name"]:
                             active = src["name"]
                             self._active_host = src["host"]
                             self._on_status("connected", active, "")
+                        self._preview_jpeg = jpeg
                         cam.send(jpeg_to_rgb(jpeg))
                     active = None
+                    self._preview_jpeg = None
                 except Exception:
                     if active == src["name"]:
                         self._on_status("searching", None, "")
                     active = None
+                    self._preview_jpeg = None
                 if self._running:
                     time.sleep(1)
         finally:
             cam.close()
             if self._active_host:
-                _control(self._active_host, "stop")
+                _control(self._active_host, "stop", self._key)
                 self._active_host = None
             self._running = False
             self._on_status("stopped", None, "")

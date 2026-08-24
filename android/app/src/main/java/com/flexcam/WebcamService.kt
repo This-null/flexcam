@@ -31,6 +31,7 @@ class WebcamService : LifecycleService() {
             Config.PORT,
             { capture.latestJpeg() },
             { cmd -> if (cmd == "stop") capture.pause() else capture.resume() },
+            Pin.get(this),
         ).also { it.start() }
     }
 

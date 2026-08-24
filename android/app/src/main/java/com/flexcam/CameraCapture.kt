@@ -38,6 +38,7 @@ class CameraCapture(
     fun pause() {
         paused = true
         latest.set(null)
+        FrameBus.jpeg = null
         ContextCompat.getMainExecutor(context).execute { provider?.unbindAll() }
     }
 
@@ -59,7 +60,9 @@ class CameraCapture(
                     .setTargetRotation(Surface.ROTATION_0)
                     .build().also { a ->
                         a.setAnalyzer(executor) { image ->
-                            latest.set(yuvToJpeg(image))
+                            val j = yuvToJpeg(image)
+                            latest.set(j)
+                            FrameBus.jpeg = j
                             image.close()
                         }
                     }

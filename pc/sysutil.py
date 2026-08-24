@@ -1,9 +1,32 @@
 import json
 import os
+import sys
 import webbrowser
 from urllib.request import urlopen
 
 import config
+
+
+def _base_dir():
+    if getattr(sys, "frozen", False):
+        return getattr(sys, "_MEIPASS", os.path.dirname(sys.executable))
+    return os.path.dirname(os.path.abspath(__file__))
+
+
+def virtualcam_installer():
+    p = os.path.join(_base_dir(), "virtualcam", "Install.bat")
+    return p if os.path.exists(p) else None
+
+
+def install_virtualcam():
+    p = virtualcam_installer()
+    if not p:
+        return False
+    try:
+        os.startfile(p)
+        return True
+    except Exception:
+        return False
 
 
 def open_url(url):
