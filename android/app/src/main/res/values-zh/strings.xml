@@ -8,8 +8,13 @@
     <string name="status_running">正在端口 %1$d 直播\n可以关闭屏幕，串流会继续。</string>
     <string name="status_stopped">FlexCam 已关闭。点按“开始”。</string>
     <string name="status_perm_denied">相机权限被拒绝</string>
-    <string name="hint_with_ip">在电脑上 (FlexCam)：\nWiFi IP: %1$s\n端口: %2$d</string>
-    <string name="hint_no_ip">在电脑上 (FlexCam)\n端口: %1$d</string>
+    <string name="hint_with_ip">在电脑上 (FlexCam)：\nWiFi IP: %1$s</string>
+    <string name="hint_no_ip">在电脑上 (FlexCam)</string>
     <string name="notif_title">FlexCam 正在运行</string>
     <string name="notif_text">端口 %1$d — USB / WiFi 直播</string>
+    <string name="update_title">有可用更新</string>
+    <string name="update_message">FlexCam %1$s 已发布，现在更新吗？</string>
+    <string name="update_download">下载</string>
+    <string name="update_later">稍后</string>
+    <string name="access_code">WiFi 访问码</string>
 </resources>

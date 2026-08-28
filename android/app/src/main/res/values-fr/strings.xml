@@ -8,8 +8,13 @@
     <string name="status_running">En direct sur le port %1$d\nVous pouvez éteindre l\'écran, le flux continue.</string>
     <string name="status_stopped">FlexCam est éteint. Touchez \'Démarrer\'.</string>
     <string name="status_perm_denied">Autorisation caméra refusée</string>
-    <string name="hint_with_ip">Sur PC (FlexCam) :\nIP WiFi : %1$s\nPort : %2$d</string>
-    <string name="hint_no_ip">Sur PC (FlexCam)\nPort : %1$d</string>
+    <string name="hint_with_ip">Sur PC (FlexCam) :\nIP WiFi : %1$s</string>
+    <string name="hint_no_ip">Sur PC (FlexCam)</string>
     <string name="notif_title">FlexCam est actif</string>
     <string name="notif_text">Port %1$d — USB / WiFi en direct</string>
+    <string name="update_title">Mise à jour disponible</string>
+    <string name="update_message">FlexCam %1$s est disponible. Mettre à jour maintenant ?</string>
+    <string name="update_download">Télécharger</string>
+    <string name="update_later">Plus tard</string>
+    <string name="access_code">Code d\'accès WiFi</string>
 </resources>

@@ -8,8 +8,13 @@
     <string name="status_running">पोर्ट %1$d पर लाइव\nआप स्क्रीन बंद कर सकते हैं, स्ट्रीमिंग जारी रहेगी।</string>
     <string name="status_stopped">FlexCam बंद है। \'शुरू करें\' दबाएँ।</string>
     <string name="status_perm_denied">कैमरा अनुमति अस्वीकृत</string>
-    <string name="hint_with_ip">PC पर (FlexCam):\nWiFi IP: %1$s\nपोर्ट: %2$d</string>
-    <string name="hint_no_ip">PC पर (FlexCam)\nपोर्ट: %1$d</string>
+    <string name="hint_with_ip">PC पर (FlexCam):\nWiFi IP: %1$s</string>
+    <string name="hint_no_ip">PC पर (FlexCam)</string>
     <string name="notif_title">FlexCam चल रहा है</string>
     <string name="notif_text">पोर्ट %1$d — USB / WiFi लाइव</string>
+    <string name="update_title">अपडेट उपलब्ध है</string>
+    <string name="update_message">FlexCam %1$s उपलब्ध है। अभी अपडेट करें?</string>
+    <string name="update_download">डाउनलोड करें</string>
+    <string name="update_later">बाद में</string>
+    <string name="access_code">WiFi एक्सेस कोड</string>
 </resources>

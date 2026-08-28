@@ -30,3 +30,6 @@ android/.idea/
 # Internal planning docs (not for the public repo)
 docs/superpowers/
 release/FlexCam-Windows.zip
+
+# Personal handoff/backup note (not for the repo)
+FLEXCAM-HANDOFF.md

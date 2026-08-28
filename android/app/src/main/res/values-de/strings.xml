@@ -8,8 +8,13 @@
     <string name="status_running">Live auf Port %1$d\nDu kannst den Bildschirm ausschalten, das Streaming läuft weiter.</string>
     <string name="status_stopped">FlexCam ist aus. Tippe auf \'Start\'.</string>
     <string name="status_perm_denied">Kameraberechtigung verweigert</string>
-    <string name="hint_with_ip">Am PC (FlexCam):\nWLAN-IP: %1$s\nPort: %2$d</string>
-    <string name="hint_no_ip">Am PC (FlexCam)\nPort: %1$d</string>
+    <string name="hint_with_ip">Am PC (FlexCam):\nWLAN-IP: %1$s</string>
+    <string name="hint_no_ip">Am PC (FlexCam)</string>
     <string name="notif_title">FlexCam läuft</string>
     <string name="notif_text">Port %1$d — USB / WLAN live</string>
+    <string name="update_title">Update verfügbar</string>
+    <string name="update_message">FlexCam %1$s ist verfügbar. Jetzt aktualisieren?</string>
+    <string name="update_download">Herunterladen</string>
+    <string name="update_later">Später</string>
+    <string name="access_code">WLAN-Zugangscode</string>
 </resources>

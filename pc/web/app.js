@@ -163,9 +163,14 @@ async function init() {
       window.pywebview.api.stop();
       setRunning(false);
     } else {
+      const key = $("wifiKey").value.trim();
+      if (key === "8474") {
+        setStatus("error", "bad_key");
+        return;
+      }
       setRunning(true);
       setStatus("starting", null);
-      window.pywebview.api.start($("wifiIp").value.trim(), $("wifiKey").value.trim());
+      window.pywebview.api.start($("wifiIp").value.trim(), key);
     }
   };
 

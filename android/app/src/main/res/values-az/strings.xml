@@ -8,8 +8,13 @@
     <string name="status_running">Port %1$d üzərində yayımda\nEkranı söndürə bilərsən, yayım davam edir.</string>
     <string name="status_stopped">FlexCam bağlıdır. \'Başlat\'a toxun.</string>
     <string name="status_perm_denied">Kamera icazəsi rədd edildi</string>
-    <string name="hint_with_ip">PC-də (FlexCam):\nWiFi IP: %1$s\nPort: %2$d</string>
-    <string name="hint_no_ip">PC-də (FlexCam)\nPort: %1$d</string>
+    <string name="hint_with_ip">PC-də (FlexCam):\nWiFi IP: %1$s</string>
+    <string name="hint_no_ip">PC-də (FlexCam)</string>
     <string name="notif_title">FlexCam işləyir</string>
     <string name="notif_text">Port %1$d — USB / WiFi yayımda</string>
+    <string name="update_title">Yeniləmə mövcuddur</string>
+    <string name="update_message">FlexCam %1$s hazırdır. İndi yenilənsin?</string>
+    <string name="update_download">Yüklə</string>
+    <string name="update_later">Sonra</string>
+    <string name="access_code">WiFi giriş kodu</string>
 </resources>

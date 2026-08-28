@@ -9,6 +9,10 @@ import adb_tools
 PORT = 8474
 
 
+class AuthError(Exception):
+    pass
+
+
 def _q(key):
     return f"?key={key}" if key else ""
 
@@ -17,6 +21,8 @@ def _stream(host, key="", timeout=2):
     conn = HTTPConnection(host, PORT, timeout=timeout)
     conn.request("GET", "/" + _q(key))
     resp = conn.getresponse()
+    if resp.status == 403:
+        raise AuthError()
     if resp.status != 200:
         raise RuntimeError(f"HTTP {resp.status}")
     parser = MjpegParser()
@@ -117,6 +123,10 @@ class FlexCamEngine:
                             self._on_status("connected", active, "")
                         self._preview_jpeg = jpeg
                         cam.send(jpeg_to_rgb(jpeg))
+                    active = None
+                    self._preview_jpeg = None
+                except AuthError:
+                    self._on_status("error", "bad_key", "")
                     active = None
                     self._preview_jpeg = None
                 except Exception:

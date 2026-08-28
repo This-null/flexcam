@@ -8,8 +8,13 @@
     <string name="status_running">ポート %1$d で配信中\n画面を消しても配信は続きます。</string>
     <string name="status_stopped">FlexCam は停止中です。「開始」をタップ。</string>
     <string name="status_perm_denied">カメラの権限が拒否されました</string>
-    <string name="hint_with_ip">PC で (FlexCam):\nWiFi IP: %1$s\nポート: %2$d</string>
-    <string name="hint_no_ip">PC で (FlexCam)\nポート: %1$d</string>
+    <string name="hint_with_ip">PC で (FlexCam):\nWiFi IP: %1$s</string>
+    <string name="hint_no_ip">PC で (FlexCam)</string>
     <string name="notif_title">FlexCam 実行中</string>
     <string name="notif_text">ポート %1$d — USB / WiFi 配信中</string>
+    <string name="update_title">アップデートがあります</string>
+    <string name="update_message">FlexCam %1$s が利用可能です。今すぐ更新しますか？</string>
+    <string name="update_download">ダウンロード</string>
+    <string name="update_later">後で</string>
+    <string name="access_code">WiFi アクセスコード</string>
 </resources>

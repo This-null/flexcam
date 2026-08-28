@@ -61,13 +61,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val ip = wifiIp()
-        val base = if (ip != null) {
-            getString(R.string.hint_with_ip, ip, Config.PORT)
+        findViewById<TextView>(R.id.hintText).text = if (ip != null) {
+            getString(R.string.hint_with_ip, ip)
         } else {
-            getString(R.string.hint_no_ip, Config.PORT)
+            getString(R.string.hint_no_ip)
         }
-        findViewById<TextView>(R.id.hintText).text =
-            base + "\n" + getString(R.string.access_code, Pin.get(this))
+        findViewById<TextView>(R.id.codeText).text = Pin.get(this)
 
         findViewById<Button>(R.id.btnGithub).setOnClickListener { open(Config.GITHUB_URL) }
         findViewById<Button>(R.id.btnDiscord).setOnClickListener { open(Config.DISCORD_URL) }
@@ -79,6 +78,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (!hasCameraPermission()) requestPermissions()
+
+        checkForUpdate()
+    }
+
+    private fun checkForUpdate() {
+        thread(name = "update") {
+            val info = Updater.check(this) ?: return@thread
+            if (info.available) runOnUiThread { showUpdateDialog(info.latest, info.url) }
+        }
+    }
+
+    private fun showUpdateDialog(latest: String, url: String) {
+        if (isFinishing) return
+        AlertDialog.Builder(this, R.style.FlexDialog)
+            .setTitle(getString(R.string.update_title))
+            .setMessage(getString(R.string.update_message, latest))
+            .setPositiveButton(getString(R.string.update_download)) { _, _ -> open(url) }
+            .setNegativeButton(getString(R.string.update_later), null)
+            .show()
     }
 
     private val langCodes = listOf("en", "tr", "de", "fr", "pt", "es", "az", "zh", "ja", "hi")

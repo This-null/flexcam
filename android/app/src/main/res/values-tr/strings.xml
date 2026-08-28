@@ -8,9 +8,13 @@
     <string name="status_running">Yayın açık: port %1$d\nEkranı kapatabilirsin, yayın sürer.</string>
     <string name="status_stopped">Kapalı — başlatmak için Aç</string>
     <string name="status_perm_denied">Kamera izni reddedildi</string>
-    <string name="hint_with_ip">PC\'de FlexCam:\nWiFi IP: %1$s\nPort: %2$d</string>
-    <string name="hint_no_ip">PC\'de FlexCam\nPort: %1$d</string>
-    <string name="access_code">WiFi erişim kodu: %1$s</string>
+    <string name="hint_with_ip">PC\'de FlexCam:\nWiFi IP: %1$s</string>
+    <string name="hint_no_ip">PC\'de FlexCam</string>
+    <string name="access_code">WiFi erişim kodu</string>
     <string name="notif_title">FlexCam çalışıyor</string>
     <string name="notif_text">Port %1$d — USB / WiFi yayında</string>
+    <string name="update_title">Güncelleme mevcut</string>
+    <string name="update_message">FlexCam %1$s sürümü çıktı. Şimdi güncellensin mi?</string>
+    <string name="update_download">İndir</string>
+    <string name="update_later">Sonra</string>
 </resources>

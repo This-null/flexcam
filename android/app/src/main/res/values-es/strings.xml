@@ -8,8 +8,13 @@
     <string name="status_running">En vivo en el puerto %1$d\nPuedes apagar la pantalla, la transmisión continúa.</string>
     <string name="status_stopped">FlexCam está apagado. Toca \'Iniciar\'.</string>
     <string name="status_perm_denied">Permiso de cámara denegado</string>
-    <string name="hint_with_ip">En el PC (FlexCam):\nIP WiFi: %1$s\nPuerto: %2$d</string>
-    <string name="hint_no_ip">En el PC (FlexCam)\nPuerto: %1$d</string>
+    <string name="hint_with_ip">En el PC (FlexCam):\nIP WiFi: %1$s</string>
+    <string name="hint_no_ip">En el PC (FlexCam)</string>
     <string name="notif_title">FlexCam está en ejecución</string>
     <string name="notif_text">Puerto %1$d — USB / WiFi en vivo</string>
+    <string name="update_title">Actualización disponible</string>
+    <string name="update_message">FlexCam %1$s ya está disponible. ¿Actualizar ahora?</string>
+    <string name="update_download">Descargar</string>
+    <string name="update_later">Más tarde</string>
+    <string name="access_code">Código de acceso WiFi</string>
 </resources>

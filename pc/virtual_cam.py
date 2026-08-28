@@ -27,7 +27,7 @@ class VirtualCamera:
         self._w = width
         self._h = height
         self._cam = None
-        for backend in ("obs", "unitycapture"):
+        for backend in ("unitycapture", "obs"):
             try:
                 self._cam = pyvirtualcam.Camera(
                     width=width, height=height, fps=fps, backend=backend
