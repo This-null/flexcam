@@ -1,4 +1,4 @@
-APP_VERSION = "1.1.0"
+APP_VERSION = "1.2.0"
 
 GITHUB_URL = "https://github.com/This-null/flexcam"
 INSTAGRAM_URL = "https://instagram.com/null.rb"
