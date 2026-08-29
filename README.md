@@ -98,4 +98,6 @@ Package a standalone `.exe` with PyInstaller (onedir):
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+FlexCam's own source code is MIT — see [LICENSE](LICENSE).
+
+The prebuilt Windows download bundles [pyvirtualcam](https://github.com/letmaik/pyvirtualcam) (GPL-2.0), so that build is distributed under the GPL-2.0 as a whole. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the full list.
