@@ -1,8 +1,12 @@
 import json
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
 import webbrowser
-from urllib.request import urlopen
+import zipfile
+from urllib.request import Request, urlopen
 
 import config
 
@@ -65,6 +69,117 @@ def check_update():
     if latest and _ver_tuple(latest) > _ver_tuple(config.APP_VERSION):
         return True, latest, url
     return False, latest, url
+
+
+def can_self_update():
+    if not getattr(sys, "frozen", False):
+        return False
+    target = install_dir()
+    probe = os.path.join(target, ".flexcam_write_test")
+    try:
+        with open(probe, "w") as f:
+            f.write("1")
+        os.remove(probe)
+        return True
+    except Exception:
+        return False
+
+
+def install_dir():
+    return os.path.dirname(os.path.abspath(sys.executable))
+
+
+def latest_zip_url():
+    try:
+        req = Request(config.RELEASES_API, headers={"User-Agent": "FlexCam"})
+        with urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+    for asset in data.get("assets", []):
+        name = str(asset.get("name", "")).lower()
+        if name.endswith(".zip"):
+            return asset.get("browser_download_url")
+    return None
+
+
+def download_update(url, on_progress=None):
+    tmp_root = tempfile.mkdtemp(prefix="flexcam_update_")
+    zip_path = os.path.join(tmp_root, "update.zip")
+    try:
+        req = Request(url, headers={"User-Agent": "FlexCam"})
+        with urlopen(req, timeout=30) as resp:
+            total = int(resp.headers.get("Content-Length") or 0)
+            done = 0
+            with open(zip_path, "wb") as f:
+                while True:
+                    chunk = resp.read(262144)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+                    done += len(chunk)
+                    if on_progress and total:
+                        on_progress(int(done * 100 / total))
+        if total and os.path.getsize(zip_path) < total:
+            raise IOError("incomplete download")
+        return tmp_root, zip_path
+    except Exception:
+        shutil.rmtree(tmp_root, ignore_errors=True)
+        return None, None
+
+
+def extract_update(tmp_root, zip_path):
+    out = os.path.join(tmp_root, "new")
+    try:
+        with zipfile.ZipFile(zip_path) as z:
+            z.extractall(out)
+    except Exception:
+        return None
+    exe = os.path.basename(sys.executable)
+    for root, _dirs, files in os.walk(out):
+        if exe in files:
+            return root
+    return None
+
+
+def apply_update(new_dir, tmp_root, restart=True):
+    target = install_dir()
+    exe = os.path.join(target, os.path.basename(sys.executable))
+    bat = os.path.join(tmp_root, "apply.bat")
+    launch = f'start "" "{exe}"' if restart else "rem no restart"
+    name = os.path.basename(sys.executable)
+    script = (
+        "@echo off\r\n"
+        "setlocal\r\n"
+        "set SYS=%SystemRoot%\\System32\r\n"
+        "set /a N=0\r\n"
+        ":wait\r\n"
+        "set /a N+=1\r\n"
+        "if %N% GTR 600 goto copy\r\n"
+        f'"%SYS%\\tasklist.exe" /fi "IMAGENAME eq {name}" /nh 2>nul | '
+        f'"%SYS%\\find.exe" /i "{name}" >nul\r\n'
+        "if not errorlevel 1 (\r\n"
+        '  "%SYS%\\ping.exe" -n 2 127.0.0.1 >nul\r\n'
+        "  goto wait\r\n"
+        ")\r\n"
+        ":copy\r\n"
+        f'"%SYS%\\robocopy.exe" "{new_dir}" "{target}" /E /IS /R:2 /W:1 >nul\r\n'
+        f"{launch}\r\n"
+        '"%SYS%\\ping.exe" -n 3 127.0.0.1 >nul\r\n'
+        f'rmdir /s /q "{tmp_root}"\r\n'
+    )
+    try:
+        with open(bat, "w", encoding="ascii", newline="") as f:
+            f.write(script)
+        subprocess.Popen(
+            [os.path.join(os.environ.get("SystemRoot", r"C:\Windows"),
+                          "System32", "cmd.exe"), "/c", bat],
+            creationflags=0x08000000,
+            close_fds=True,
+        )
+        return True
+    except Exception:
+        return False
 
 
 def settings_path():

@@ -1,7 +1,9 @@
 import json
 import os
+import shutil
 import sys
 import threading
+import time
 
 import webview
 
@@ -40,6 +42,8 @@ class Api:
         self.engine = FlexCamEngine(on_status=self._on_status)
         self.settings = sysutil.load_settings()
         self.t = i18n.T(self.settings.get("lang"))
+        self._connected = False
+        self._pending = None
 
     def _strings(self):
         strings = dict(i18n.STRINGS["en"])
@@ -117,7 +121,77 @@ class Api:
         self.settings[key] = val
         sysutil.save_settings(self.settings)
 
+    def start_auto_update(self):
+        threading.Thread(target=self._auto_update, daemon=True).start()
+
+    def _auto_update(self):
+        has, latest, _url = sysutil.check_update()
+        if not has or not sysutil.can_self_update():
+            return
+        zip_url = sysutil.latest_zip_url()
+        if not zip_url:
+            return
+        self._update_ui("downloading", 0, latest)
+        tmp_root, zip_path = sysutil.download_update(
+            zip_url, lambda p: self._update_ui("downloading", p, latest)
+        )
+        if not tmp_root:
+            self._update_ui("failed", 0, latest)
+            return
+        new_dir = sysutil.extract_update(tmp_root, zip_path)
+        if not new_dir:
+            shutil.rmtree(tmp_root, ignore_errors=True)
+            self._update_ui("failed", 0, latest)
+            return
+        self._pending = (new_dir, tmp_root)
+        while self._connected:
+            self._update_ui("waiting", 100, latest)
+            time.sleep(3)
+        self._install(latest)
+
+    def _install(self, latest):
+        pending = self._pending
+        if not pending:
+            return
+        self._pending = None
+        new_dir, tmp_root = pending
+        self._update_ui("installing", 100, latest)
+        if not sysutil.apply_update(new_dir, tmp_root, restart=True):
+            self._update_ui("failed", 0, latest)
+            return
+        self.engine.stop()
+        time.sleep(1)
+        w = _WINDOW
+        if w is not None:
+            try:
+                w.destroy()
+            except Exception:
+                pass
+        time.sleep(1)
+        os._exit(0)
+
+    def apply_pending_on_exit(self):
+        pending = self._pending
+        if not pending:
+            return
+        self._pending = None
+        new_dir, tmp_root = pending
+        sysutil.apply_update(new_dir, tmp_root, restart=False)
+
+    def _update_ui(self, state, pct, latest):
+        w = _WINDOW
+        if w is None:
+            return
+        try:
+            w.evaluate_js(
+                "window.flexUpdate(%s, %s, %s)"
+                % (json.dumps(state), int(pct), json.dumps(latest or ""))
+            )
+        except Exception:
+            pass
+
     def _on_status(self, state, info, _detail):
+        self._connected = state == "connected"
         w = _WINDOW
         if w is not None:
             try:
@@ -143,6 +217,7 @@ class TrayHolder:
             self._ensure_icon()
             return False
         self.api.engine.stop()
+        self.api.apply_pending_on_exit()
         return True
 
     def _ensure_icon(self):
@@ -170,6 +245,7 @@ class TrayHolder:
     def _quit(self, *a):
         self.quitting = True
         self.api.engine.stop()
+        self.api.apply_pending_on_exit()
         if self.icon is not None:
             try:
                 self.icon.stop()
@@ -191,6 +267,7 @@ def main():
     window.events.closing += tray.on_closing
     preview_server.PreviewServer(lambda: api.engine.preview_jpeg()).start()
     presence.start()
+    api.start_auto_update()
     webview.start()
 
 

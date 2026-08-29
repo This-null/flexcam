@@ -1,5 +1,6 @@
 let S = {};
 let CFG = {};
+let updateUrl = null;
 let running = false;
 let lastState = null;
 let lastInfo = null;
@@ -184,6 +185,7 @@ async function init() {
 
   window.pywebview.api.check_update().then((u) => {
     if (u && u.has) {
+      updateUrl = u.url;
       const b = $("updateBadge");
       b.textContent = S.update_available.replace("{}", u.latest);
       b.classList.remove("hidden");
@@ -202,5 +204,25 @@ async function init() {
   window.pywebview.api.start(boot.wifi_ip || "", boot.wifi_key || "");
 }
 
+function setUpdate(state, pct, latest) {
+  const b = $("updateBadge");
+  if (!b) return;
+  b.classList.remove("hidden");
+  b.onclick = null;
+  if (state === "downloading") {
+    b.textContent = (S.update_downloading || "Downloading update {}%")
+      .replace("{}", pct);
+  } else if (state === "waiting") {
+    b.textContent = S.update_waiting || "Update ready — installs after streaming";
+  } else if (state === "installing") {
+    b.textContent = S.update_installing || "Installing update...";
+  } else {
+    b.textContent = (S.update_available || "Update available: v{}")
+      .replace("{}", latest);
+    b.onclick = () => window.pywebview.api.open_url(updateUrl || CFG.github);
+  }
+}
+
 window.flexStatus = setStatus;
+window.flexUpdate = setUpdate;
 window.addEventListener("pywebviewready", init);
