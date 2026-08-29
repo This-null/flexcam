@@ -33,3 +33,9 @@ release/FlexCam-Windows.zip
 
 # Personal handoff/backup note (not for the repo)
 FLEXCAM-HANDOFF.md
+
+# Signing keys and secrets (never commit)
+*.jks
+*.keystore
+keystore.properties
+android/keystore.properties
