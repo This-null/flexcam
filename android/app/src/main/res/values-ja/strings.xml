@@ -28,4 +28,5 @@
     <string name="remote_type_code">コードを入力</string>
     <string name="remote_code_hint">name.CODE</string>
     <string name="pin_lock">このコードを固定する</string>
+    <string name="update_downloading">ダウンロード中... %1$d%%</string>
 </resources>

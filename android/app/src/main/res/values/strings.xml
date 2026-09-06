@@ -29,4 +29,5 @@
     <string name="remote_type_code">Enter code</string>
     <string name="remote_code_hint">name.CODE</string>
     <string name="pin_lock">Keep this code fixed</string>
+    <string name="update_downloading">Downloading... %1$d%%</string>
 </resources>

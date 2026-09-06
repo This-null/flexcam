@@ -28,4 +28,5 @@
     <string name="remote_type_code">कोड लिखें</string>
     <string name="remote_code_hint">name.CODE</string>
     <string name="pin_lock">यह कोड स्थिर रखें</string>
+    <string name="update_downloading">डाउनलोड हो रहा है... %1$d%%</string>
 </resources>

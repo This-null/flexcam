@@ -28,4 +28,5 @@
     <string name="remote_type_code">Escribir código</string>
     <string name="remote_code_hint">nombre.CODIGO</string>
     <string name="pin_lock">Mantener este código</string>
+    <string name="update_downloading">Descargando... %1$d%%</string>
 </resources>

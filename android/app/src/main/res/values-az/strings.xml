@@ -28,4 +28,5 @@
     <string name="remote_type_code">Kodu yaz</string>
     <string name="remote_code_hint">ad.KOD</string>
     <string name="pin_lock">Bu kod sabit qalsın</string>
+    <string name="update_downloading">Yüklənir... %%%1$d</string>
 </resources>

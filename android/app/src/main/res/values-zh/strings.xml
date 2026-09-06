@@ -28,4 +28,5 @@
     <string name="remote_type_code">输入代码</string>
     <string name="remote_code_hint">名称.代码</string>
     <string name="pin_lock">固定此代码</string>
+    <string name="update_downloading">正在下载... %1$d%%</string>
 </resources>

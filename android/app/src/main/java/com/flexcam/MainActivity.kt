@@ -212,9 +212,43 @@ class MainActivity : AppCompatActivity() {
         AlertDialog.Builder(this, R.style.FlexDialog)
             .setTitle(getString(R.string.update_title))
             .setMessage(getString(R.string.update_message, latest))
-            .setPositiveButton(getString(R.string.update_download)) { _, _ -> open(url) }
+            .setPositiveButton(getString(R.string.update_download)) { _, _ ->
+                downloadAndInstall(url)
+            }
             .setNegativeButton(getString(R.string.update_later), null)
             .show()
+    }
+
+    private fun downloadAndInstall(fallbackUrl: String) {
+        val dialog = AlertDialog.Builder(this, R.style.FlexDialog)
+            .setTitle(getString(R.string.update_title))
+            .setMessage(getString(R.string.update_downloading, 0))
+            .setCancelable(false)
+            .create()
+        dialog.show()
+        thread(name = "apk-download") {
+            val apkUrl = Updater.apkUrl()
+            if (apkUrl == null) {
+                runOnUiThread {
+                    dialog.dismiss()
+                    open(fallbackUrl)
+                }
+                return@thread
+            }
+            var shown = -1
+            val file = Updater.downloadApk(this, apkUrl) { pct ->
+                if (pct != shown) {
+                    shown = pct
+                    runOnUiThread {
+                        dialog.setMessage(getString(R.string.update_downloading, pct))
+                    }
+                }
+            }
+            runOnUiThread {
+                dialog.dismiss()
+                if (file == null || !Updater.installApk(this, file)) open(fallbackUrl)
+            }
+        }
     }
 
     private val langCodes = listOf("en", "tr", "de", "fr", "pt", "es", "az", "zh", "ja", "hi")
