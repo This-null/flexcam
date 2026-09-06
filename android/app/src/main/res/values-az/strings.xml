@@ -17,4 +17,15 @@
     <string name="update_download">Yüklə</string>
     <string name="update_later">Sonra</string>
     <string name="access_code">WiFi giriş kodu</string>
+    <string name="remote_connect">Uzaqdan qoşul</string>
+    <string name="remote_disconnect">Bağlantını kəs</string>
+    <string name="remote_connecting">Qoşulur...</string>
+    <string name="remote_connected">Qoşuldu - yayımdadır</string>
+    <string name="remote_denied">Kod rədd edildi</string>
+    <string name="remote_error">Qoşulmaq alınmadı</string>
+    <string name="remote_scan_hint">Kompüterdəki QR kodu oxut</string>
+    <string name="remote_scan_qr">QR kodu oxut</string>
+    <string name="remote_type_code">Kodu yaz</string>
+    <string name="remote_code_hint">ad.KOD</string>
+    <string name="pin_lock">Bu kod sabit qalsın</string>
 </resources>

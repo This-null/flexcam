@@ -131,6 +131,15 @@
                 android:textColor="@color/fg"
                 android:textSize="26sp"
                 android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/pinLock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/pin_lock"
+                android:textColor="@color/muted"
+                android:textSize="11sp" />
         </LinearLayout>
 
         <Button
@@ -157,6 +166,27 @@
             android:textAllCaps="false"
             android:textColor="@color/fg"
             android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/remoteButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_secondary"
+            android:stateListAnimator="@null"
+            android:text="@string/remote_connect"
+            android:textAllCaps="false"
+            android:textColor="@color/fg"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/remoteState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:textColor="@color/muted"
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/langButton"

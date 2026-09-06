@@ -1,6 +1,9 @@
 let S = {};
 let CFG = {};
 let updateUrl = null;
+let remoteOn = false;
+let quality = "medium";
+let theme = "default";
 let running = false;
 let lastState = null;
 let lastInfo = null;
@@ -18,7 +21,58 @@ function applyStrings() {
   $("usbLabel").textContent = S.usb_label;
   $("privacy").textContent = "🔒 " + S.privacy_note;
   $("statusCaption").textContent = S.status_caption;
+  $("remoteLabel").textContent = S.remote_label || "Remote";
+  $("remoteExp").textContent = S.remote_experimental || "Experimental";
+  $("remoteHelp").textContent = S.remote_help || "";
+  $("remoteBtn").textContent = remoteOn
+    ? (S.remote_stop || "Stop remote")
+    : (S.remote_start || "Start remote");
+  $("qLowName").textContent = S.q_low || "Low";
+  $("qMedName").textContent = S.q_medium || "Medium";
+  $("qHighName").textContent = S.q_high || "High";
+  $("qLowSub").textContent = S.q_low_sub || "";
+  $("qMedSub").textContent = S.q_medium_sub || "";
+  $("qHighSub").textContent = S.q_high_sub || "";
 }
+
+function applyTheme(name) {
+  theme = name || "default";
+  if (theme === "default") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", theme);
+  document.querySelectorAll(".theme-dot").forEach((d) => {
+    d.classList.toggle("active", d.dataset.theme === theme);
+  });
+}
+
+function markQuality() {
+  document.querySelectorAll(".q-btn").forEach((b) => {
+    b.classList.toggle("active", b.dataset.q === quality);
+  });
+}
+
+function setRemoteUi(on) {
+  remoteOn = on;
+  $("remotePair").classList.toggle("hidden", !on);
+  $("remoteBtn").textContent = on
+    ? (S.remote_stop || "Stop remote")
+    : (S.remote_start || "Start remote");
+  $("toggleBtn").disabled = on;
+  $("wifiIp").disabled = on;
+  $("wifiKey").disabled = on;
+}
+
+window.flexRemote = function (state, detail) {
+  const el = $("remoteState");
+  if (!el) return;
+  if (state === "starting") el.textContent = S.remote_starting || "Starting tunnel...";
+  else if (state === "ready") el.textContent = S.remote_waiting || "Waiting for phone...";
+  else if (state === "connected") el.textContent = S.remote_connected || "Phone connected";
+  else if (state === "stopped") el.textContent = "";
+  else if (state === "error") {
+    el.textContent = (S["remote_" + detail] || S.remote_failed || "Failed");
+    setRemoteUi(false);
+  }
+};
 
 function setUsb(connected) {
   $("usbDot").classList.toggle("on", !!connected);
@@ -175,6 +229,36 @@ async function init() {
     }
   };
 
+  document.querySelectorAll(".q-btn").forEach((b) => {
+    b.onclick = () => {
+      quality = b.dataset.q;
+      markQuality();
+      window.pywebview.api.remote_quality(quality);
+    };
+  });
+
+  $("remoteBtn").onclick = async () => {
+    if (remoteOn) {
+      await window.pywebview.api.remote_stop();
+      setRemoteUi(false);
+      $("remoteState").textContent = "";
+      return;
+    }
+    $("remoteBtn").disabled = true;
+    $("remoteState").textContent = S.remote_starting || "Starting tunnel...";
+    $("remotePair").classList.remove("hidden");
+    const r = await window.pywebview.api.remote_start(quality);
+    $("remoteBtn").disabled = false;
+    if (!r || !r.ok) {
+      $("remoteState").textContent = S.remote_failed || "Could not start";
+      $("remotePair").classList.add("hidden");
+      return;
+    }
+    $("remoteQr").src = r.qr || "";
+    $("remoteCode").textContent = r.code || "";
+    setRemoteUi(true);
+  };
+
   $("installBtn").onclick = async () => {
     setLog(S.installing, "");
     const r = await window.pywebview.api.install_apk();
@@ -199,6 +283,15 @@ async function init() {
   $("previewImg").src = "http://127.0.0.1:8475/preview";
   $("wifiIp").value = boot.wifi_ip || "";
   $("wifiKey").value = boot.wifi_key || "";
+  quality = boot.remote_quality || "medium";
+  markQuality();
+  applyTheme(boot.theme);
+  document.querySelectorAll(".theme-dot").forEach((d) => {
+    d.onclick = () => {
+      applyTheme(d.dataset.theme);
+      window.pywebview.api.save_setting("theme", theme);
+    };
+  });
   setRunning(true);
   setStatus("starting", null);
   window.pywebview.api.start(boot.wifi_ip || "", boot.wifi_key || "");

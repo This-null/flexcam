@@ -20,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.ContextCompat
 import androidx.core.os.LocaleListCompat
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import java.net.Inet4Address
 import java.net.NetworkInterface
 import java.util.Collections
@@ -28,6 +30,18 @@ class MainActivity : AppCompatActivity() {
 
     private var serviceStarted = false
     private var userStopped = false
+    private var remote: RemoteClient? = null
+
+    private val scanLauncher = registerForActivityResult(ScanContract()) { result ->
+        val text = result.contents
+        if (text.isNullOrBlank()) return@registerForActivityResult
+        val parsed = RemoteClient.parseCode(text)
+        if (parsed == null) {
+            remoteState(getString(R.string.remote_denied))
+        } else {
+            connectRemote(parsed.first, parsed.second)
+        }
+    }
 
     private val permLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -67,6 +81,12 @@ class MainActivity : AppCompatActivity() {
             getString(R.string.hint_no_ip)
         }
         findViewById<TextView>(R.id.codeText).text = Pin.get(this)
+        findViewById<android.widget.CheckBox>(R.id.pinLock).apply {
+            isChecked = Pin.isLocked(this@MainActivity)
+            setOnCheckedChangeListener { _, checked ->
+                Pin.setLocked(this@MainActivity, checked)
+            }
+        }
 
         findViewById<Button>(R.id.btnGithub).setOnClickListener { open(Config.GITHUB_URL) }
         findViewById<Button>(R.id.btnDiscord).setOnClickListener { open(Config.DISCORD_URL) }
@@ -77,9 +97,107 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { showLangDialog() }
         }
 
+        findViewById<Button>(R.id.remoteButton).setOnClickListener { onRemoteClick() }
+
         if (!hasCameraPermission()) requestPermissions()
 
         checkForUpdate()
+    }
+
+    private fun onRemoteClick() {
+        val active = remote?.isRunning() == true
+        if (active) {
+            remote?.stop()
+            remote = null
+            setRemoteButton(false)
+            remoteState("")
+            return
+        }
+        if (!hasCameraPermission()) {
+            requestPermissions()
+            return
+        }
+        maybeStartService()
+        AlertDialog.Builder(this, R.style.FlexDialog)
+            .setTitle(getString(R.string.remote_connect))
+            .setItems(
+                arrayOf(
+                    getString(R.string.remote_scan_qr),
+                    getString(R.string.remote_type_code),
+                )
+            ) { _, which ->
+                if (which == 0) launchScanner() else askForCode()
+            }
+            .show()
+    }
+
+    private fun launchScanner() {
+        val options = ScanOptions()
+            .setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+            .setPrompt(getString(R.string.remote_scan_hint))
+            .setBeepEnabled(false)
+            .setOrientationLocked(false)
+        scanLauncher.launch(options)
+    }
+
+    private fun askForCode() {
+        val input = android.widget.EditText(this).apply {
+            hint = getString(R.string.remote_code_hint)
+            setSingleLine()
+        }
+        AlertDialog.Builder(this, R.style.FlexDialog)
+            .setTitle(getString(R.string.remote_type_code))
+            .setView(input)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val parsed = RemoteClient.parseCode(input.text.toString())
+                if (parsed == null) remoteState(getString(R.string.remote_denied))
+                else connectRemote(parsed.first, parsed.second)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun connectRemote(url: String, secret: String) {
+        remoteState(getString(R.string.remote_connecting))
+        val client = RemoteClient(
+            url = url,
+            secretHex = secret,
+            frames = { FrameBus.jpeg },
+            onState = { state, _ ->
+                runOnUiThread {
+                    when (state) {
+                        "connected" -> {
+                            remoteState(getString(R.string.remote_connected))
+                            setRemoteButton(true)
+                        }
+                        "denied" -> {
+                            remoteState(getString(R.string.remote_denied))
+                            setRemoteButton(false)
+                        }
+                        "error" -> {
+                            remoteState(getString(R.string.remote_error))
+                            setRemoteButton(false)
+                        }
+                        "stopped" -> {
+                            remoteState("")
+                            setRemoteButton(false)
+                        }
+                    }
+                }
+            },
+        )
+        remote = client
+        client.start()
+    }
+
+    private fun setRemoteButton(active: Boolean) {
+        findViewById<Button>(R.id.remoteButton).text = getString(
+            if (active) R.string.remote_disconnect else R.string.remote_connect
+        )
+    }
+
+    private fun remoteState(text: String) {
+        findViewById<TextView>(R.id.remoteState).text = text
     }
 
     private fun checkForUpdate() {
@@ -138,8 +256,13 @@ class MainActivity : AppCompatActivity() {
 
     @Volatile private var previewing = false
 
+    private fun refreshCode() {
+        findViewById<TextView>(R.id.codeText).text = Pin.get(this)
+    }
+
     override fun onResume() {
         super.onResume()
+        refreshCode()
         if (previewing) return
         previewing = true
         val view = findViewById<ImageView>(R.id.preview)

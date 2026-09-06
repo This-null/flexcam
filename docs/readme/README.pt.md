@@ -29,8 +29,10 @@ automaticamente se uma cair.
 - Câmera **frontal / traseira**, **retrato/paisagem automático**
 - Continua transmitindo com a **tela desligada**
 - **Código de acesso WiFi** — estranhos na sua rede não veem a transmissão
-- **10 idiomas**, interface escura, bandeja
-- Roda totalmente no seu dispositivo — **nenhum dado sai do seu computador**
+- **Modo remoto (experimental)** — use o telefone de qualquer lugar, mesmo com
+  dados móveis, sem redirecionamento de portas e sem conta
+- **10 idiomas**, 6 temas, interface escura, bandeja
+- USB e WiFi rodam **totalmente no seu dispositivo**
 
 ## Driver de câmera virtual
 
@@ -51,11 +53,33 @@ O FlexCam precisa de uma câmera virtual no PC. Você tem duas opções:
    - Primeiro uso: se solicitado, clique em **"Instalar câmera virtual"** (uma vez).
 3. Conecta por USB **automaticamente**. Para WiFi, digite o IP do telefone e o
    **código de acesso** mostrado no app.
-4. No seu app de vídeo, escolha a câmera **"OBS Virtual Camera"** (ou
-   **"Unity Video Capture"** com o driver incluído).
+4. No seu app de vídeo, escolha a câmera **"FlexCam"** (ou
+   **"OBS Virtual Camera"** se você usa OBS).
 
 > USB precisa de **depuração USB** ativada (Opções do desenvolvedor). WiFi não
 > precisa de cabo.
+
+## Conexão remota (experimental)
+
+O modo remoto permite que o telefone alcance o PC a partir de **qualquer
+rede** — outro WiFi, a casa de um amigo ou dados móveis. Não há nada a
+configurar: sem redirecionamento de portas, sem ajustes de roteador, sem conta.
+
+1. No PC, abra **Conexão remota** e escolha uma qualidade.
+2. O FlexCam abre um túnel temporário e mostra um **QR code**.
+3. No telefone, toque em **Conectar remotamente → Escanear QR code**.
+
+**O que você deve saber:**
+
+- O vídeo passa pela **Cloudflare**, que termina o TLS e pode tecnicamente
+  vê-lo. Isso não acontece nos modos USB e WiFi.
+- A Cloudflare documenta os Quick Tunnels como voltados a teste e
+  desenvolvimento, sem garantia de disponibilidade — daí o rótulo experimental.
+- Espere **latência maior** e **consumo real de dados**; cada qualidade mostra
+  uma estimativa por hora.
+- Cada sessão gera um novo endereço e um segredo de 128 bits, nunca
+  transmitido; após várias tentativas erradas tudo é encerrado.
+- O modo remoto vem **desligado por padrão**.
 
 ## Compilar do código-fonte
 
@@ -81,6 +105,14 @@ python -m venv .venv
 - **Android:** Kotlin, CameraX, servidor MJPEG na porta `8474`.
 - **PC:** Python, interface pywebview, `pyvirtualcam` → OBS ou Unity Capture.
 - **Transporte:** TCP puro via `adb forward` (USB) ou o IP do telefone (WiFi).
+
+## Privacidade
+
+USB e WiFi local mantêm tudo nos seus próprios dispositivos.
+
+O modo remoto é a exceção: ele encaminha o vídeo pela rede da Cloudflare, pois
+é isso que torna a conexão possível sem abrir portas. Só funciona se você
+ligá-lo.
 
 ## Licença
 

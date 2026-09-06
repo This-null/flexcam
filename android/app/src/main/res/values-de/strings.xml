@@ -17,4 +17,15 @@
     <string name="update_download">Herunterladen</string>
     <string name="update_later">Später</string>
     <string name="access_code">WLAN-Zugangscode</string>
+    <string name="remote_connect">Fernverbindung</string>
+    <string name="remote_disconnect">Trennen</string>
+    <string name="remote_connecting">Verbindet...</string>
+    <string name="remote_connected">Verbunden - Übertragung läuft</string>
+    <string name="remote_denied">Code abgelehnt</string>
+    <string name="remote_error">Verbindung fehlgeschlagen</string>
+    <string name="remote_scan_hint">QR-Code am PC scannen</string>
+    <string name="remote_scan_qr">QR-Code scannen</string>
+    <string name="remote_type_code">Code eingeben</string>
+    <string name="remote_code_hint">name.CODE</string>
+    <string name="pin_lock">Code beibehalten</string>
 </resources>

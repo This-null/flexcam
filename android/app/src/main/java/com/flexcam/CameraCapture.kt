@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
 import android.graphics.Matrix
 import android.graphics.Rect
+import android.util.Size
 import android.graphics.YuvImage
 import android.provider.Settings
 import android.view.OrientationEventListener
@@ -54,18 +55,7 @@ class CameraCapture(
         future.addListener({
             provider = future.get()
             if (analysis == null) {
-                analysis = ImageAnalysis.Builder()
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                    .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
-                    .setTargetRotation(Surface.ROTATION_0)
-                    .build().also { a ->
-                        a.setAnalyzer(executor) { image ->
-                            val j = yuvToJpeg(image)
-                            latest.set(j)
-                            FrameBus.jpeg = j
-                            image.close()
-                        }
-                    }
+                analysis = buildAnalysis()
             }
             bindCurrent()
         }, ContextCompat.getMainExecutor(context))
@@ -111,6 +101,31 @@ class CameraCapture(
         ContextCompat.getMainExecutor(context).execute { bindCurrent() }
     }
 
+    private fun buildAnalysis(): ImageAnalysis =
+        ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
+            .setTargetRotation(Surface.ROTATION_0)
+            .setTargetResolution(Size(Quality.width, Quality.height))
+            .build().also { a ->
+                a.setAnalyzer(executor) { image ->
+                    val j = yuvToJpeg(image)
+                    latest.set(j)
+                    FrameBus.jpeg = j
+                    image.close()
+                }
+            }
+
+    fun rebuildAnalysis() {
+        val p = provider ?: return
+        try {
+            p.unbindAll()
+        } catch (_: Exception) {
+        }
+        analysis = buildAnalysis()
+        bindCurrent()
+    }
+
     private fun bindCurrent() {
         val p = provider ?: return
         val useCase = analysis ?: return
@@ -134,7 +149,7 @@ class CameraCapture(
         val yuv = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
         val out = ByteArrayOutputStream()
         yuv.compressToJpeg(
-            Rect(0, 0, image.width, image.height), Config.JPEG_QUALITY, out
+            Rect(0, 0, image.width, image.height), Quality.jpeg, out
         )
         val jpeg = out.toByteArray()
         val rotation = image.imageInfo.rotationDegrees
@@ -149,7 +164,7 @@ class CameraCapture(
             src, 0, 0, src.width, src.height, matrix, true
         )
         val out = ByteArrayOutputStream()
-        rotated.compress(Bitmap.CompressFormat.JPEG, Config.JPEG_QUALITY, out)
+        rotated.compress(Bitmap.CompressFormat.JPEG, Quality.jpeg, out)
         if (rotated != src) rotated.recycle()
         src.recycle()
         return out.toByteArray()

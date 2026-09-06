@@ -25,8 +25,10 @@ class WebcamService : LifecycleService() {
             PowerManager.PARTIAL_WAKE_LOCK, "flexcam:capture"
         ).also { it.acquire() }
 
+        Pin.rotate(this)
         capture = CameraCapture(this, this)
         capture.start()
+        Quality.onChange = { capture.rebuildAnalysis() }
         server = MjpegServer(
             Config.PORT,
             { capture.latestJpeg() },

@@ -14,6 +14,7 @@ import config
 import i18n
 import presence
 import preview_server
+import remote
 
 
 def base_dir():
@@ -44,6 +45,7 @@ class Api:
         self.t = i18n.T(self.settings.get("lang"))
         self._connected = False
         self._pending = None
+        self._remote = None
 
     def _strings(self):
         strings = dict(i18n.STRINGS["en"])
@@ -68,6 +70,8 @@ class Api:
             "running": self.engine.is_running(),
             "wifi_ip": self.settings.get("wifi_ip", ""),
             "wifi_key": self.settings.get("wifi_key", ""),
+            "remote_quality": self.settings.get("remote_quality", "medium"),
+            "theme": self.settings.get("theme", "default"),
         }
 
     def set_lang(self, lang):
@@ -75,6 +79,68 @@ class Api:
         self.settings["lang"] = self.t.lang
         sysutil.save_settings(self.settings)
         return {"strings": self._strings(), "lang": self.t.lang}
+
+    def remote_start(self, quality="medium"):
+        if self._remote is not None:
+            return {"ok": False, "error": "already"}
+        self.engine.stop()
+        time.sleep(0.6)
+        session = remote.RemoteSession(
+            on_frame=self.engine.push_frame,
+            on_state=self._on_remote_state,
+            quality=quality,
+        )
+        self._remote = session
+        if not session.start():
+            self._remote = None
+            return {"ok": False, "error": "tunnel_failed"}
+        self.settings["remote_quality"] = session.quality
+        sysutil.save_settings(self.settings)
+        self.engine.start_remote()
+        return {
+            "ok": True,
+            "code": session.pairing_code(),
+            "qr": self._qr_data_uri(session.pairing_payload()),
+        }
+
+    def remote_stop(self):
+        session, self._remote = self._remote, None
+        self.engine.stop()
+        if session is not None:
+            session.stop()
+        return True
+
+    def remote_quality(self, quality):
+        self.settings["remote_quality"] = quality
+        sysutil.save_settings(self.settings)
+        if self._remote is not None:
+            self._remote.set_quality(quality)
+        return True
+
+    def _on_remote_state(self, state, detail):
+        w = _WINDOW
+        if w is None:
+            return
+        try:
+            w.evaluate_js("window.flexRemote(%s, %s)"
+                          % (json.dumps(state), json.dumps(detail or "")))
+        except Exception:
+            pass
+
+    @staticmethod
+    def _qr_data_uri(payload):
+        if not payload:
+            return ""
+        try:
+            import base64
+            import io as _io
+            import qrcode
+            img = qrcode.make(payload).convert("RGB")
+            buf = _io.BytesIO()
+            img.save(buf, "PNG")
+            return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+        except Exception:
+            return ""
 
     def start(self, ip, key=""):
         ip = (ip or "").strip()

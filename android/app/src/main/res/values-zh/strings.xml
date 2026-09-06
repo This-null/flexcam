@@ -17,4 +17,15 @@
     <string name="update_download">下载</string>
     <string name="update_later">稍后</string>
     <string name="access_code">WiFi 访问码</string>
+    <string name="remote_connect">远程连接</string>
+    <string name="remote_disconnect">断开连接</string>
+    <string name="remote_connecting">正在连接...</string>
+    <string name="remote_connected">已连接 - 推流中</string>
+    <string name="remote_denied">代码被拒绝</string>
+    <string name="remote_error">无法连接</string>
+    <string name="remote_scan_hint">扫描电脑上的二维码</string>
+    <string name="remote_scan_qr">扫描二维码</string>
+    <string name="remote_type_code">输入代码</string>
+    <string name="remote_code_hint">名称.代码</string>
+    <string name="pin_lock">固定此代码</string>
 </resources>

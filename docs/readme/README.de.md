@@ -29,8 +29,10 @@ OBS) sie als Kamera auswählen kann. Es funktioniert über **USB** (ADB) und
 - **Vordere / hintere** Kamera, **automatisch Hoch-/Querformat**
 - Streamt weiter bei **ausgeschaltetem Bildschirm**
 - **WLAN-Zugangscode** — Fremde im Netzwerk können den Stream nicht sehen
-- **10 Sprachen**, dunkle Oberfläche, Infobereich
-- Läuft komplett auf deinem Gerät — **keine Daten verlassen deinen Computer**
+- **Fernmodus (experimentell)** — nutze dein Handy von überall, auch mobil;
+  ohne Portfreigabe und ohne Konto
+- **10 Sprachen**, 6 Themes, dunkle Oberfläche, Infobereich
+- USB und WLAN laufen **komplett auf deinem Gerät**
 
 ## Treiber der virtuellen Kamera
 
@@ -51,11 +53,33 @@ FlexCam braucht eine virtuelle Kamera am PC. Du hast zwei Optionen:
    - Erster Start: bei Aufforderung **„Virtuelle Kamera installieren"** (einmalig).
 3. Verbindet sich per USB **automatisch**. Für WLAN die Handy-IP und den in der
    App angezeigten **Zugangscode** eingeben.
-4. Wähle in deiner Video-App die Kamera **„OBS Virtual Camera"** (bzw.
-   **„Unity Video Capture"** beim mitgelieferten Treiber).
+4. Wähle in deiner Video-App die Kamera **„FlexCam“** (oder
+   **„OBS Virtual Camera“**, falls du OBS nutzt).
 
 > USB benötigt aktiviertes **USB-Debugging** (Entwickleroptionen). WLAN braucht
 > kein Kabel.
+
+## Fernverbindung (experimentell)
+
+Der Fernmodus lässt das Handy deinen PC aus **jedem Netz** erreichen — anderes
+WLAN, bei Freunden oder mobil. Es gibt nichts einzurichten: keine Portfreigabe,
+keine Router-Einstellungen, kein Konto.
+
+1. Am PC **Fernverbindung** öffnen und eine Qualität wählen.
+2. FlexCam öffnet einen temporären Tunnel und zeigt einen **QR-Code**.
+3. Am Handy auf **Fernverbindung → QR-Code scannen** tippen.
+
+**Wichtig zu wissen:**
+
+- Das Video läuft über **Cloudflare**, wo TLS endet und es technisch einsehbar
+  ist. Bei USB und WLAN passiert das nicht.
+- Cloudflare bezeichnet Quick Tunnels als für Test und Entwicklung gedacht,
+  ohne Verfügbarkeitsgarantie — deshalb gilt die Funktion als experimentell.
+- Rechne mit **höherer Latenz** und echtem **Datenverbrauch**; die
+  Qualitätsstufen zeigen eine Schätzung pro Stunde.
+- Jede Sitzung erzeugt eine neue Adresse und ein neues 128-Bit-Geheimnis. Es
+  wird nie übertragen; nach mehreren Fehlversuchen schaltet sich alles ab.
+- Der Fernmodus ist **standardmäßig aus**.
 
 ## Aus Quellcode bauen
 
@@ -81,6 +105,14 @@ Standalone-`.exe` mit PyInstaller (onedir) — siehe den Befehl im englischen RE
 - **Android:** Kotlin, CameraX, MJPEG-Server auf Port `8474`.
 - **PC:** Python, pywebview-Oberfläche, `pyvirtualcam` → OBS oder Unity Capture.
 - **Übertragung:** rohes TCP über `adb forward` (USB) oder die Handy-IP (WLAN).
+
+## Datenschutz
+
+USB und lokales WLAN behalten alles auf deinen eigenen Geräten.
+
+Der Fernmodus ist die Ausnahme: Er leitet das Video bewusst über Cloudflare,
+denn nur so gelingt eine Verbindung ohne offene Ports. Er läuft nur, wenn du
+ihn einschaltest.
 
 ## Lizenz
 

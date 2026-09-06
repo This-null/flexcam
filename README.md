@@ -4,7 +4,7 @@
 
 # FlexCam
 
-**Turn your phone into a PC webcam — over USB or WiFi.**
+**Turn your phone into a PC webcam — over USB, WiFi, or from anywhere.**
 
 🇬🇧 English ·
 [🇹🇷 Türkçe](docs/readme/README.tr.md) ·
@@ -29,8 +29,9 @@
 
 FlexCam streams your Android phone's camera to your PC and exposes it as a
 **virtual webcam**, so any app (Zoom, Teams, Discord, your browser, OBS) can
-pick it as a camera. It works over **USB** (via ADB) and **WiFi**, and switches
-between them automatically if one drops.
+pick it as a camera. It works over **USB** (via ADB) and **WiFi**, switching between them
+automatically if one drops, and can also connect from **any network** —
+including mobile data — with the experimental remote mode.
 
 - Hybrid **USB + WiFi** with automatic failover
 - **Auto-connects** when your phone is ready — no manual steps
@@ -38,8 +39,10 @@ between them automatically if one drops.
 - **Front / back** camera switch, **auto portrait/landscape**
 - Keeps streaming with the **screen off**
 - **WiFi access code** — strangers on your network can't view the stream
-- **10 languages**, dark UI, tray support
-- Runs fully on your device — **no data ever leaves your computer**
+- **Remote mode (experimental)** — use your phone from anywhere, even on
+  mobile data, with no port forwarding and no account
+- **10 languages**, 6 themes, dark UI, tray support
+- USB and WiFi run **fully on your device**
 
 ## Virtual camera driver
 
@@ -59,10 +62,35 @@ FlexCam needs a virtual camera on the PC. You have two options:
    - First run: if prompted, click **"Install virtual camera"** (one-time).
 3. It **auto-connects** over USB. For WiFi, type the phone's IP and the
    **access code** shown in the app.
-4. In your video app, pick the camera **"OBS Virtual Camera"** (or
-   **"Unity Video Capture"** if you used the bundled driver).
+4. In your video app, pick the camera named **"FlexCam"** (or
+   **"OBS Virtual Camera"** if you rely on OBS instead).
 
 > USB needs **USB debugging** enabled (Developer Options). WiFi needs no cable.
+
+## Remote connection (experimental)
+
+Remote mode lets the phone reach your PC from **any network** — a different
+WiFi, a friend's house, or mobile data. There is nothing to configure: no port
+forwarding, no router settings, no account.
+
+1. On the PC, open **Remote connection** and pick a quality preset.
+2. FlexCam opens a temporary tunnel and shows a **QR code**.
+3. On the phone, tap **Connect remotely → Scan QR code**.
+
+The phone then streams to your PC and the virtual camera works as usual.
+
+**What you should know:**
+
+- Video is relayed through **Cloudflare**, which terminates TLS and can
+  technically see it. USB and WiFi modes do not do this.
+- The tunnel uses Cloudflare Quick Tunnels, which Cloudflare documents as
+  intended for testing and development, with no uptime guarantee. That is why
+  the feature is marked experimental.
+- Expect **higher latency** than on a local network, and real **mobile data
+  use** — the quality presets show an estimate per hour.
+- Each session generates a new address and a new 128-bit secret. The secret is
+  never sent over the wire, and repeated wrong attempts shut the listener down.
+- Remote mode is **off by default** and stops when you close it.
 
 ## Build from source
 
@@ -95,6 +123,15 @@ Package a standalone `.exe` with PyInstaller (onedir):
 - **Android:** Kotlin, CameraX, an MJPEG server on port `8474`.
 - **PC:** Python, pywebview UI, `pyvirtualcam` → OBS or Unity Capture.
 - **Transport:** raw TCP over `adb forward` (USB) or the phone's IP (WiFi).
+
+## Privacy
+
+USB and local WiFi keep everything on your own devices — the video never leaves
+your machine or your network.
+
+Remote mode is the exception: it routes video through Cloudflare's network by
+design, because that is what makes a connection possible without opening ports.
+It is off unless you turn it on.
 
 ## License
 

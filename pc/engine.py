@@ -54,6 +54,7 @@ class FlexCamEngine:
         self._active_host = None
         self._key = ""
         self._preview_jpeg = None
+        self._remote_frame = None
 
     def is_running(self):
         return self._running
@@ -83,7 +84,17 @@ class FlexCamEngine:
             src.append({"name": "WiFi", "host": self._wifi_ip, "usb": False})
         return src
 
-    def _loop(self):
+    def start_remote(self):
+        if self._running:
+            return
+        self._running = True
+        self._thread = threading.Thread(target=self._remote_loop, daemon=True)
+        self._thread.start()
+
+    def push_frame(self, jpeg):
+        self._remote_frame = jpeg
+
+    def _open_camera(self):
         cam = None
         attempts = 0
         while self._running and cam is None:
@@ -96,6 +107,38 @@ class FlexCamEngine:
                 else:
                     self._on_status("starting", None, "")
                 time.sleep(1.5)
+        return cam
+
+    def _remote_loop(self):
+        cam = self._open_camera()
+        if not self._running or cam is None:
+            self._running = False
+            self._on_status("stopped", None, "")
+            return
+        self._on_status("searching", None, "")
+        active = False
+        last = None
+        try:
+            while self._running:
+                jpeg = self._remote_frame
+                if jpeg is None or jpeg is last:
+                    time.sleep(0.01)
+                    continue
+                last = jpeg
+                if not active:
+                    active = True
+                    self._on_status("connected", "Remote", "")
+                self._preview_jpeg = jpeg
+                cam.send(jpeg_to_rgb(jpeg))
+        finally:
+            cam.close()
+            self._remote_frame = None
+            self._preview_jpeg = None
+            self._running = False
+            self._on_status("stopped", None, "")
+
+    def _loop(self):
+        cam = self._open_camera()
         if not self._running or cam is None:
             self._running = False
             self._on_status("stopped", None, "")

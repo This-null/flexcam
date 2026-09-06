@@ -17,4 +17,15 @@
     <string name="update_message">FlexCam %1$s sürümü çıktı. Şimdi güncellensin mi?</string>
     <string name="update_download">İndir</string>
     <string name="update_later">Sonra</string>
+    <string name="remote_connect">Uzaktan bağlan</string>
+    <string name="remote_disconnect">Bağlantıyı kes</string>
+    <string name="remote_connecting">Bağlanıyor...</string>
+    <string name="remote_connected">Bağlandı - yayında</string>
+    <string name="remote_denied">Kod reddedildi</string>
+    <string name="remote_error">Bağlanılamadı</string>
+    <string name="remote_scan_hint">PC\'deki QR kodunu okut</string>
+    <string name="remote_scan_qr">QR kodu okut</string>
+    <string name="remote_type_code">Kodu yaz</string>
+    <string name="remote_code_hint">isim.KOD</string>
+    <string name="pin_lock">Bu kod sabit kalsın</string>
 </resources>

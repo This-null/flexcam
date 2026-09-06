@@ -67,6 +67,14 @@
           <span class="slider"></span>
         </span>
       </label>
+      <div class="theme-row" id="themeRow">
+        <span class="theme-dot" data-theme="default" style="background:#5b6cff" title="Gece"></span>
+        <span class="theme-dot" data-theme="ocean"   style="background:#14b8a6" title="Okyanus"></span>
+        <span class="theme-dot" data-theme="forest"  style="background:#34a853" title="Orman"></span>
+        <span class="theme-dot" data-theme="sunset"  style="background:#f97316" title="Gün batımı"></span>
+        <span class="theme-dot" data-theme="grape"   style="background:#a855f7" title="Üzüm"></span>
+        <span class="theme-dot" data-theme="light"   style="background:#e8eaf2" title="Açık"></span>
+      </div>
 
       <div class="version-row">
         <span id="versionLbl">v1.0.0</span>
@@ -101,6 +109,25 @@
       <div class="ip-row">
         <input type="text" id="wifiIp" placeholder="192.168.1.x">
         <input type="text" id="wifiKey" placeholder="Kod" maxlength="8">
+      </div>
+    </div>
+
+    <div class="field remote">
+      <div class="remote-head">
+        <label id="remoteLabel">Remote</label>
+        <span class="exp-badge" id="remoteExp">Experimental</span>
+      </div>
+      <p class="remote-help" id="remoteHelp"></p>
+      <div class="quality-row" id="qualityRow">
+        <button class="q-btn" data-q="low"><span class="q-name" id="qLowName"></span><span class="q-sub" id="qLowSub"></span></button>
+        <button class="q-btn" data-q="medium"><span class="q-name" id="qMedName"></span><span class="q-sub" id="qMedSub"></span></button>
+        <button class="q-btn" data-q="high"><span class="q-name" id="qHighName"></span><span class="q-sub" id="qHighSub"></span></button>
+      </div>
+      <button class="secondary" id="remoteBtn">Start remote</button>
+      <div class="remote-pair hidden" id="remotePair">
+        <img class="remote-qr" id="remoteQr" alt="">
+        <p class="remote-code" id="remoteCode"></p>
+        <p class="remote-state" id="remoteState"></p>
       </div>
     </div>
 

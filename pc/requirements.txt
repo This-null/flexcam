@@ -4,3 +4,5 @@ pyvirtualcam
 pystray
 pywebview
 pypresence
+websockets
+qrcode

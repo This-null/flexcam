@@ -39,3 +39,6 @@ FLEXCAM-HANDOFF.md
 *.keystore
 keystore.properties
 android/keystore.properties
+
+# Bundled cloudflared binary (downloaded at build time)
+pc/bin/cloudflared.exe

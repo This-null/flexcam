@@ -17,4 +17,15 @@
     <string name="update_download">Télécharger</string>
     <string name="update_later">Plus tard</string>
     <string name="access_code">Code d\'accès WiFi</string>
+    <string name="remote_connect">Connexion à distance</string>
+    <string name="remote_disconnect">Déconnecter</string>
+    <string name="remote_connecting">Connexion...</string>
+    <string name="remote_connected">Connecté - diffusion</string>
+    <string name="remote_denied">Code refusé</string>
+    <string name="remote_error">Connexion impossible</string>
+    <string name="remote_scan_hint">Scannez le QR code sur le PC</string>
+    <string name="remote_scan_qr">Scanner le QR code</string>
+    <string name="remote_type_code">Saisir le code</string>
+    <string name="remote_code_hint">nom.CODE</string>
+    <string name="pin_lock">Garder ce code</string>
 </resources>

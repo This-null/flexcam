@@ -29,8 +29,10 @@ kəsilsə avtomatik digərinə keçir.
 - **Ön / arxa** kamera, **avtomatik dik/üfüqi**
 - **Ekran bağlı** ikən yayım davam edir
 - **WiFi giriş kodu** — şəbəkədəki yad adamlar yayımı görə bilməz
-- **10 dil**, qaranlıq interfeys, trey dəstəyi
-- Tamamilə cihazında işləyir — **heç bir məlumat kompüterindən çıxmır**
+- **Uzaq rejim (sınaq)** — telefonunu hər yerdən, hətta mobil data ilə
+  istifadə et; port yönləndirmə və hesab tələb olunmur
+- **10 dil**, 6 tema, qaranlıq interfeys, trey dəstəyi
+- USB və WiFi **tamamilə cihazında** işləyir
 
 ## Virtual kamera sürücüsü
 
@@ -50,11 +52,33 @@ FlexCam PC-də virtual kameraya ehtiyac duyur. İki seçimin var:
    - İlk açılış: soruşulsa **"Virtual kamera quraşdır"**a bas (bir dəfəlik).
 3. USB üzərindən **avtomatik qoşulur**. WiFi üçün telefonun IP-sini və tətbiqdə
    göstərilən **giriş kodunu** yaz.
-4. Video tətbiqində kamera olaraq **"OBS Virtual Camera"** (daxili sürücü ilə
-   **"Unity Video Capture"**) seç.
+4. Video tətbiqində kamera olaraq **"FlexCam"** seç (OBS istifadə edirsənsə
+   **"OBS Virtual Camera"**).
 
 > USB üçün **USB debugging** aktiv olmalıdır (Developer Options). WiFi kabel
 > tələb etmir.
+
+## Uzaqdan bağlantı (sınaq)
+
+Uzaq rejim telefonun **istənilən şəbəkədən** kompüterinə çatmasına imkan verir —
+başqa WiFi, dostunun evi və ya mobil data. Heç nə qurmaq lazım deyil: port
+yönləndirmə yox, modem ayarı yox, hesab yox.
+
+1. Kompüterdə **Uzaqdan bağlantı**-nı aç və keyfiyyət seç.
+2. FlexCam müvəqqəti tunel açır və bir **QR kod** göstərir.
+3. Telefonda **Uzaqdan qoşul → QR kodu oxut** düyməsinə toxun.
+
+**Bilməli olduqların:**
+
+- Video **Cloudflare** üzərindən ötürülür; TLS orada bitir, yəni texniki olaraq
+  görə bilərlər. USB və WiFi rejimlərində bu baş vermir.
+- Cloudflare Quick Tunnel-ları sınaq və inkişaf üçün nəzərdə tutulmuş kimi
+  təsvir edir, işləmə zəmanəti yoxdur — buna görə funksiya sınaq sayılır.
+- Yerli şəbəkəyə nisbətən **daha yüksək gecikmə** və real **mobil data
+  sərfiyyatı** gözlə; keyfiyyət seçimlərinin yanında saatlıq təxmin yazılıb.
+- Hər sessiyada yeni ünvan və yeni 128-bit açar yaradılır. Açar heç vaxt
+  ötürülmür, ardıcıl səhv cəhdlərdən sonra dinləyici bağlanır.
+- Uzaq rejim **standart olaraq bağlıdır**.
 
 ## Mənbədən qurmaq
 
@@ -80,6 +104,13 @@ Müstəqil `.exe` PyInstaller (onedir) ilə — ingilis README-dəki əmrə bax.
 - **Android:** Kotlin, CameraX, `8474` portunda MJPEG server.
 - **PC:** Python, pywebview interfeys, `pyvirtualcam` → OBS və ya Unity Capture.
 - **Ötürmə:** `adb forward` (USB) və ya telefonun IP-si (WiFi) üzərindən xam TCP.
+
+## Məxfilik
+
+USB və yerli WiFi hər şeyi öz cihazlarında saxlayır.
+
+Uzaq rejim istisnadır: videonu qəsdən Cloudflare şəbəkəsi üzərindən ötürür,
+çünki port açmadan bağlantını mümkün edən budur. Yalnız sən açanda işləyir.
 
 ## Lisenziya
 

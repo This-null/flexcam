@@ -17,4 +17,15 @@
     <string name="update_download">डाउनलोड करें</string>
     <string name="update_later">बाद में</string>
     <string name="access_code">WiFi एक्सेस कोड</string>
+    <string name="remote_connect">रिमोट से जुड़ें</string>
+    <string name="remote_disconnect">डिस्कनेक्ट करें</string>
+    <string name="remote_connecting">जुड़ रहा है...</string>
+    <string name="remote_connected">जुड़ा - स्ट्रीमिंग</string>
+    <string name="remote_denied">कोड अस्वीकृत</string>
+    <string name="remote_error">कनेक्ट नहीं हो सका</string>
+    <string name="remote_scan_hint">PC पर दिखा QR कोड स्कैन करें</string>
+    <string name="remote_scan_qr">QR कोड स्कैन करें</string>
+    <string name="remote_type_code">कोड लिखें</string>
+    <string name="remote_code_hint">name.CODE</string>
+    <string name="pin_lock">यह कोड स्थिर रखें</string>
 </resources>

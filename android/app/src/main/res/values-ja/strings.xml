@@ -17,4 +17,15 @@
     <string name="update_download">ダウンロード</string>
     <string name="update_later">後で</string>
     <string name="access_code">WiFi アクセスコード</string>
+    <string name="remote_connect">リモート接続</string>
+    <string name="remote_disconnect">切断</string>
+    <string name="remote_connecting">接続中...</string>
+    <string name="remote_connected">接続済み - 配信中</string>
+    <string name="remote_denied">コードが拒否されました</string>
+    <string name="remote_error">接続できません</string>
+    <string name="remote_scan_hint">PC の QR コードを読み取ってください</string>
+    <string name="remote_scan_qr">QR コードを読み取る</string>
+    <string name="remote_type_code">コードを入力</string>
+    <string name="remote_code_hint">name.CODE</string>
+    <string name="pin_lock">このコードを固定する</string>
 </resources>

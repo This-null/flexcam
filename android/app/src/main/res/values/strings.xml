@@ -18,4 +18,15 @@
     <string name="update_message">FlexCam %1$s is available. Update now?</string>
     <string name="update_download">Download</string>
     <string name="update_later">Later</string>
+    <string name="remote_connect">Connect remotely</string>
+    <string name="remote_disconnect">Disconnect</string>
+    <string name="remote_connecting">Connecting...</string>
+    <string name="remote_connected">Connected - streaming</string>
+    <string name="remote_denied">Code rejected</string>
+    <string name="remote_error">Could not connect</string>
+    <string name="remote_scan_hint">Scan the QR code on your PC</string>
+    <string name="remote_scan_qr">Scan QR code</string>
+    <string name="remote_type_code">Enter code</string>
+    <string name="remote_code_hint">name.CODE</string>
+    <string name="pin_lock">Keep this code fixed</string>
 </resources>
