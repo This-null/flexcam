@@ -39,7 +39,9 @@ class RemoteClient(
             if (text.startsWith("{")) {
                 return try {
                     val o = JSONObject(text)
-                    Pair(o.getString("u"), o.getString("k"))
+                    val url = o.getString("u")
+                    val key = o.getString("k")
+                    if (isTunnelUrl(url) && key.matches(HEX32)) Pair(url, key) else null
                 } catch (_: Exception) {
                     null
                 }
@@ -47,6 +49,7 @@ class RemoteClient(
             val dot = text.indexOf('.')
             if (dot <= 0 || dot == text.length - 1) return null
             val sub = text.substring(0, dot)
+            if (!sub.matches(SUBDOMAIN)) return null
             var key = text.substring(dot + 1).uppercase()
             while (key.length % 8 != 0) key += "="
             val bytes = try {
@@ -55,7 +58,24 @@ class RemoteClient(
                 null
             } ?: return null
             val hex = bytes.joinToString("") { "%02x".format(it) }
+            if (!hex.matches(HEX32)) return null
             return Pair("https://$sub.trycloudflare.com", hex)
+        }
+
+        private val HEX32 = Regex("[0-9a-f]{32}")
+        private val SUBDOMAIN = Regex("[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?")
+
+        fun isTunnelUrl(url: String): Boolean = try {
+            val u = java.net.URI(url)
+            u.scheme == "https" && u.userInfo == null && u.port == -1 &&
+                (u.rawPath.isNullOrEmpty() || u.rawPath == "/") &&
+                u.query == null && u.fragment == null &&
+                (u.host ?: "").let {
+                    it.endsWith(".trycloudflare.com") &&
+                        it.removeSuffix(".trycloudflare.com").matches(SUBDOMAIN)
+                }
+        } catch (_: Exception) {
+            false
         }
 
         private const val B32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"

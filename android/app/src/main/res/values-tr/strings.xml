@@ -29,4 +29,5 @@
     <string name="remote_code_hint">isim.KOD</string>
     <string name="pin_lock">Bu kod sabit kalsın</string>
     <string name="update_downloading">İndiriliyor... %%%1$d</string>
+    <string name="whats_new">Yenilikler</string>
 </resources>

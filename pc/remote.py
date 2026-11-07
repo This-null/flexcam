@@ -17,6 +17,8 @@ import websockets
 
 TUNNEL_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com")
 MAX_AUTH_FAILURES = 5
+MAX_MESSAGE = 4 * 1024 * 1024
+MAX_HANDSHAKES = 4
 HANDSHAKE_TIMEOUT = 10
 TUNNEL_TIMEOUT = 30
 CODE_TTL = 600
@@ -59,7 +61,8 @@ class RemoteSession:
         self._thread = None
         self._running = False
         self._connected = False
-        self._failures = 0
+        self._fails = {}
+        self._handshakes = 0
         self._started_at = 0
 
     def is_running(self):
@@ -108,7 +111,7 @@ class RemoteSession:
             self._on_state("error", "no_cloudflared")
             return False
         self._running = True
-        self._failures = 0
+        self._fails = {}
         self._connected = False
         self.secret = secrets.token_bytes(16).hex()
         self._port = _free_port()
@@ -195,36 +198,47 @@ class RemoteSession:
 
     async def _run_server(self):
         async with websockets.serve(
-            self._handler, "127.0.0.1", self._port, max_size=None,
+            self._handler, "127.0.0.1", self._port, max_size=MAX_MESSAGE,
             ping_interval=20, ping_timeout=20,
         ) as server:
             self._server = server
             while self._running:
                 await asyncio.sleep(0.3)
 
+    @staticmethod
+    def _source(ws):
+        try:
+            return ws.request.headers.get("CF-Connecting-IP") or ws.remote_address[0]
+        except Exception:
+            return "?"
+
     async def _handler(self, ws):
-        if self._failures >= MAX_AUTH_FAILURES or self._connected:
+        src = self._source(ws)
+        if (self._connected or self._fails.get(src, 0) >= MAX_AUTH_FAILURES
+                or self._handshakes >= MAX_HANDSHAKES):
             await ws.close()
             return
-        nonce = secrets.token_bytes(16)
+        self._handshakes += 1
         try:
-            await ws.send(nonce.hex())
-            reply = await asyncio.wait_for(ws.recv(), timeout=HANDSHAKE_TIMEOUT)
-        except Exception:
-            return
-        expect = hmac.new(bytes.fromhex(self.secret), nonce,
-                          hashlib.sha256).hexdigest()
-        if not hmac.compare_digest(str(reply).strip(), expect):
-            self._failures += 1
-            await asyncio.sleep(min(2 ** self._failures, 30))
+            nonce = secrets.token_bytes(16)
             try:
-                await ws.close()
+                await ws.send(nonce.hex())
+                reply = await asyncio.wait_for(ws.recv(), timeout=HANDSHAKE_TIMEOUT)
             except Exception:
-                pass
-            if self._failures >= MAX_AUTH_FAILURES:
-                self._on_state("error", "too_many_attempts")
-            return
-        self._failures = 0
+                return
+            expect = hmac.new(bytes.fromhex(self.secret), nonce,
+                              hashlib.sha256).hexdigest()
+            if not hmac.compare_digest(str(reply).strip(), expect):
+                n = self._fails[src] = self._fails.get(src, 0) + 1
+                await asyncio.sleep(min(2 ** n, 30))
+                try:
+                    await ws.close()
+                except Exception:
+                    pass
+                return
+        finally:
+            self._handshakes -= 1
+        self._fails.pop(src, None)
         self._connected = True
         self._on_state("connected", "")
         try:

@@ -29,4 +29,5 @@
     <string name="remote_code_hint">nom.CODE</string>
     <string name="pin_lock">Garder ce code</string>
     <string name="update_downloading">Téléchargement... %1$d%%</string>
+    <string name="whats_new">Nouveautés</string>
 </resources>

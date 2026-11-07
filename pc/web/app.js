@@ -280,7 +280,7 @@ async function init() {
   pollUsb();
   setInterval(pollUsb, 3000);
 
-  $("previewImg").src = "http://127.0.0.1:8475/preview";
+  $("previewImg").src = "http://127.0.0.1:8475/preview?t=" + encodeURIComponent(boot.preview_token);
   $("wifiIp").value = boot.wifi_ip || "";
   $("wifiKey").value = boot.wifi_key || "";
   quality = boot.remote_quality || "medium";
@@ -295,6 +295,7 @@ async function init() {
   setRunning(true);
   setStatus("starting", null);
   window.pywebview.api.start(boot.wifi_ip || "", boot.wifi_key || "");
+  window.pywebview.api.whats_new().then((r) => r && showWhatsNew(r));
 }
 
 function setUpdate(state, pct, latest) {
@@ -314,6 +315,14 @@ function setUpdate(state, pct, latest) {
       .replace("{}", latest);
     b.onclick = () => window.pywebview.api.open_url(updateUrl || CFG.github);
   }
+}
+
+function showWhatsNew(info) {
+  $("whatsNewTitle").textContent = (S.whats_new || "What's new") + " — v" + info.version;
+  $("whatsNewBody").textContent = info.notes;
+  $("whatsNewClose").textContent = S.whats_new_close || "Got it";
+  $("whatsNew").classList.remove("hidden");
+  $("whatsNewClose").onclick = () => $("whatsNew").classList.add("hidden");
 }
 
 window.flexStatus = setStatus;

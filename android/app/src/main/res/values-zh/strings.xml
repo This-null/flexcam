@@ -29,4 +29,5 @@
     <string name="remote_code_hint">名称.代码</string>
     <string name="pin_lock">固定此代码</string>
     <string name="update_downloading">正在下载... %1$d%%</string>
+    <string name="whats_new">新功能</string>
 </resources>

@@ -1,27 +1,40 @@
+import hmac
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from urllib.parse import parse_qs, urlparse
 
 PREVIEW_PORT = 8475
 
 
 class PreviewServer:
-    def __init__(self, get_frame):
+    def __init__(self, get_frame, token):
         self._get = get_frame
+        self._token = token
         self._httpd = None
 
     def start(self):
         get = self._get
+        token = self._token
+        hosts = (f"127.0.0.1:{PREVIEW_PORT}", f"localhost:{PREVIEW_PORT}")
 
         class Handler(BaseHTTPRequestHandler):
             def log_message(self, *a):
                 pass
 
             def do_GET(self):
-                if self.path.startswith("/preview"):
+                url = urlparse(self.path)
+                given = parse_qs(url.query).get("t", [""])[0]
+                host = (self.headers.get("Host") or "").lower()
+                ok = (
+                    url.path == "/preview"
+                    and host in hosts
+                    and hmac.compare_digest(given.encode(), token.encode())
+                )
+                if ok:
                     self._stream()
                 else:
-                    self.send_response(404)
+                    self.send_response(403)
                     self.end_headers()
 
             def _stream(self):

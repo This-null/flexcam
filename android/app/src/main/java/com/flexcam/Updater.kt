@@ -16,6 +16,21 @@ object Updater {
 
     data class Info(val available: Boolean, val latest: String, val url: String)
 
+    fun notes(version: String): String {
+        return try {
+            val tag = version.split(".").let { p -> (p + List(3) { "0" }).take(3).joinToString(".") }
+            val conn = URL(RELEASES_API.replace("/latest", "/tags/v$tag")).openConnection().apply {
+                connectTimeout = 6000
+                readTimeout = 6000
+                setRequestProperty("User-Agent", "FlexCam")
+            }
+            JSONObject(conn.getInputStream().bufferedReader().use { it.readText() })
+                .optString("body", "")
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
     fun apkUrl(): String? {
         return try {
             val conn = URL(RELEASES_API).openConnection().apply {

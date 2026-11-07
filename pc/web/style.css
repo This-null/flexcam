@@ -463,3 +463,20 @@ html[data-theme="light"] .main::-webkit-scrollbar-thumb {
 }
 .theme-dot:hover { transform: scale(1.12); }
 .theme-dot.active { border-color: var(--fg); }
+
+.modal {
+  position: fixed; inset: 0; z-index: 50; display: flex;
+  align-items: center; justify-content: center;
+  background: rgba(0, 0, 0, 0.55); padding: 24px;
+}
+.modal-card {
+  width: 100%; max-width: 560px; max-height: 80vh; display: flex; flex-direction: column;
+  gap: 14px; padding: 22px; border-radius: 16px; background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.modal-card h3 { font-size: 16px; }
+.modal-card pre {
+  flex: 1; overflow-y: auto; white-space: pre-wrap; word-break: break-word;
+  font: inherit; font-size: 13px; line-height: 1.55; color: var(--muted);
+  user-select: text;
+}

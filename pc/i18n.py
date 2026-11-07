@@ -15,6 +15,8 @@ LANGS = [
 
 STRINGS = {
     "en": {
+        "whats_new": "What's new",
+        "whats_new_close": "Got it",
         "tagline": "Turn your phone into a webcam — USB or WiFi",
         "status_ready": "Ready",
         "status_starting": "Starting...",
@@ -76,6 +78,8 @@ STRINGS = {
         "usb_disconnected": "Not connected",
     },
     "tr": {
+        "whats_new": "Yenilikler",
+        "whats_new_close": "Tamam",
         "tagline": "Telefonun webcam olsun — USB veya WiFi",
         "status_ready": "Hazır",
         "status_starting": "Başlatılıyor...",
@@ -137,6 +141,8 @@ STRINGS = {
         "usb_disconnected": "Bağlı değil",
     },
     "de": {
+        "whats_new": "Neuigkeiten",
+        "whats_new_close": "Verstanden",
         "tagline": "Verwandle dein Handy in eine Webcam — USB oder WLAN",
         "status_ready": "Bereit",
         "status_starting": "Wird gestartet...",
@@ -195,6 +201,8 @@ STRINGS = {
         "usb_disconnected": "Nicht verbunden",
     },
     "fr": {
+        "whats_new": "Nouveautés",
+        "whats_new_close": "Compris",
         "tagline": "Transformez votre téléphone en webcam — USB ou WiFi",
         "status_ready": "Prêt",
         "status_starting": "Démarrage...",
@@ -253,6 +261,8 @@ STRINGS = {
         "usb_disconnected": "Non connecté",
     },
     "pt": {
+        "whats_new": "Novidades",
+        "whats_new_close": "Entendi",
         "tagline": "Transforme seu telefone numa webcam — USB ou WiFi",
         "status_ready": "Pronto",
         "status_starting": "Iniciando...",
@@ -311,6 +321,8 @@ STRINGS = {
         "usb_disconnected": "Não conectado",
     },
     "es": {
+        "whats_new": "Novedades",
+        "whats_new_close": "Entendido",
         "tagline": "Convierte tu teléfono en una webcam — USB o WiFi",
         "status_ready": "Listo",
         "status_starting": "Iniciando...",
@@ -369,6 +381,8 @@ STRINGS = {
         "usb_disconnected": "No conectado",
     },
     "az": {
+        "whats_new": "Yeniliklər",
+        "whats_new_close": "Aydındır",
         "tagline": "Telefonunu veb-kameraya çevir — USB və ya WiFi",
         "status_ready": "Hazır",
         "status_starting": "Başladılır...",
@@ -427,6 +441,8 @@ STRINGS = {
         "usb_disconnected": "Qoşulu deyil",
     },
     "zh": {
+        "whats_new": "新功能",
+        "whats_new_close": "知道了",
         "tagline": "把手机变成网络摄像头 — USB 或 WiFi",
         "status_ready": "就绪",
         "status_starting": "正在启动...",
@@ -485,6 +501,8 @@ STRINGS = {
         "usb_disconnected": "未连接",
     },
     "ja": {
+        "whats_new": "新機能",
+        "whats_new_close": "OK",
         "tagline": "スマホをウェブカメラに — USB または WiFi",
         "status_ready": "準備完了",
         "status_starting": "開始中...",
@@ -543,6 +561,8 @@ STRINGS = {
         "usb_disconnected": "未接続",
     },
     "hi": {
+        "whats_new": "नया क्या है",
+        "whats_new_close": "ठीक है",
         "tagline": "अपने फ़ोन को वेबकैम बनाएँ — USB या WiFi",
         "status_ready": "तैयार",
         "status_starting": "शुरू हो रहा है...",

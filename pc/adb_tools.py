@@ -71,12 +71,27 @@ def app_installed(serial=None):
     return "com.flexcam" in out
 
 
+def phone_version(serial):
+    try:
+        out = _run(["-s", serial, "shell", "dumpsys", "package", "com.flexcam"],
+                   timeout=8).stdout
+    except Exception:
+        return (0,)
+    for line in out.splitlines():
+        line = line.strip()
+        if line.startswith("versionName="):
+            parts = line.split("=", 1)[1].split(".")
+            return tuple(int(p) if p.isdigit() else 0 for p in parts)
+    return (0,)
+
+
 def ensure_forward():
     serial = detect_device()
     if serial is None:
         return False
     try:
-        r = _run(["-s", serial, "forward", f"tcp:{PORT}", f"tcp:{PORT}"])
+        target = "localabstract:flexcam" if phone_version(serial) >= (1, 4, 1) else f"tcp:{PORT}"
+        r = _run(["-s", serial, "forward", f"tcp:{PORT}", target])
         return r.returncode == 0
     except Exception:
         return False

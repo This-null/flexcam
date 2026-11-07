@@ -1,5 +1,8 @@
+import hashlib
+import hmac
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -89,6 +92,36 @@ def install_dir():
     return os.path.dirname(os.path.abspath(sys.executable))
 
 
+def update_sha256(version):
+    try:
+        with urlopen(config.UPDATE_URL, timeout=6) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception:
+        return None
+    digest = str(data.get("sha256", "")).lower()
+    if data.get("version") == version and re.fullmatch(r"[0-9a-f]{64}", digest):
+        return digest
+    return None
+
+
+def verify_sha256(path, expected):
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return hmac.compare_digest(h.hexdigest().encode(), expected.encode())
+
+
+def release_notes(version):
+    url = config.RELEASES_API.replace("/latest", f"/tags/v{version}")
+    try:
+        req = Request(url, headers={"User-Agent": "FlexCam"})
+        with urlopen(req, timeout=6) as resp:
+            return json.loads(resp.read().decode("utf-8")).get("body") or ""
+    except Exception:
+        return ""
+
+
 def latest_zip_url():
     try:
         req = Request(config.RELEASES_API, headers={"User-Agent": "FlexCam"})
@@ -103,7 +136,7 @@ def latest_zip_url():
     return None
 
 
-def download_update(url, on_progress=None):
+def download_update(url, expected_sha256, on_progress=None):
     tmp_root = tempfile.mkdtemp(prefix="flexcam_update_")
     zip_path = os.path.join(tmp_root, "update.zip")
     try:
@@ -122,6 +155,8 @@ def download_update(url, on_progress=None):
                         on_progress(int(done * 100 / total))
         if total and os.path.getsize(zip_path) < total:
             raise IOError("incomplete download")
+        if not verify_sha256(zip_path, expected_sha256):
+            raise IOError("checksum mismatch")
         return tmp_root, zip_path
     except Exception:
         shutil.rmtree(tmp_root, ignore_errors=True)

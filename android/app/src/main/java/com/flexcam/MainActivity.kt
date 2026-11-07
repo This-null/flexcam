@@ -102,6 +102,27 @@ class MainActivity : AppCompatActivity() {
         if (!hasCameraPermission()) requestPermissions()
 
         checkForUpdate()
+        showWhatsNewIfUpdated()
+    }
+
+    private fun showWhatsNewIfUpdated() {
+        val prefs = getSharedPreferences("flexcam", MODE_PRIVATE)
+        val current = packageManager.getPackageInfo(packageName, 0).versionName ?: return
+        val seen = prefs.getString("seen_version", null)
+        prefs.edit().putString("seen_version", current).apply()
+        if (seen == null || seen == current) return
+        thread(name = "whats-new") {
+            val body = Updater.notes(current)
+            if (body.isNotBlank() && !isFinishing) {
+                runOnUiThread {
+                    AlertDialog.Builder(this, R.style.FlexDialog)
+                        .setTitle(getString(R.string.whats_new) + " - v" + current)
+                        .setMessage(body)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+            }
+        }
     }
 
     private fun onRemoteClick() {

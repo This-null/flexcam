@@ -29,4 +29,5 @@
     <string name="remote_code_hint">name.CODE</string>
     <string name="pin_lock">このコードを固定する</string>
     <string name="update_downloading">ダウンロード中... %1$d%%</string>
+    <string name="whats_new">新機能</string>
 </resources>

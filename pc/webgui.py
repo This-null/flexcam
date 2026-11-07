@@ -1,5 +1,6 @@
 import json
 import os
+import secrets
 import shutil
 import sys
 import threading
@@ -36,6 +37,7 @@ def logo_path():
 
 
 _WINDOW = None
+PREVIEW_TOKEN = secrets.token_urlsafe(16)
 
 
 class Api:
@@ -72,6 +74,7 @@ class Api:
             "wifi_key": self.settings.get("wifi_key", ""),
             "remote_quality": self.settings.get("remote_quality", "medium"),
             "theme": self.settings.get("theme", "default"),
+            "preview_token": PREVIEW_TOKEN,
         }
 
     def set_lang(self, lang):
@@ -183,6 +186,15 @@ class Api:
         has, latest, url = sysutil.check_update()
         return {"has": has, "latest": latest, "url": url}
 
+    def whats_new(self):
+        seen = self.settings.get("seen_version")
+        self.settings["seen_version"] = config.APP_VERSION
+        sysutil.save_settings(self.settings)
+        if not seen or seen == config.APP_VERSION:
+            return None
+        notes = sysutil.release_notes(config.APP_VERSION)
+        return {"version": config.APP_VERSION, "notes": notes} if notes else None
+
     def save_setting(self, key, val):
         self.settings[key] = val
         sysutil.save_settings(self.settings)
@@ -195,11 +207,13 @@ class Api:
         if not has or not sysutil.can_self_update():
             return
         zip_url = sysutil.latest_zip_url()
-        if not zip_url:
+        digest = sysutil.update_sha256(latest)
+        if not zip_url or not digest:
+            self._update_ui("failed", 0, latest)
             return
         self._update_ui("downloading", 0, latest)
         tmp_root, zip_path = sysutil.download_update(
-            zip_url, lambda p: self._update_ui("downloading", p, latest)
+            zip_url, digest, lambda p: self._update_ui("downloading", p, latest)
         )
         if not tmp_root:
             self._update_ui("failed", 0, latest)
@@ -331,7 +345,7 @@ def main():
     _WINDOW = window
     tray = TrayHolder(api, window)
     window.events.closing += tray.on_closing
-    preview_server.PreviewServer(lambda: api.engine.preview_jpeg()).start()
+    preview_server.PreviewServer(lambda: api.engine.preview_jpeg(), PREVIEW_TOKEN).start()
     presence.start()
     api.start_auto_update()
     webview.start()

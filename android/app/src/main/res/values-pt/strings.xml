@@ -29,4 +29,5 @@
     <string name="remote_code_hint">nome.CODIGO</string>
     <string name="pin_lock">Manter este código</string>
     <string name="update_downloading">Baixando... %1$d%%</string>
+    <string name="whats_new">Novidades</string>
 </resources>
