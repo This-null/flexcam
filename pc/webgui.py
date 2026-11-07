@@ -75,6 +75,8 @@ class Api:
             "remote_quality": self.settings.get("remote_quality", "medium"),
             "theme": self.settings.get("theme", "default"),
             "preview_token": PREVIEW_TOKEN,
+            "discord_rpc": self.settings.get("discord_rpc", True),
+            "motion": self.settings.get("motion", "system"),
         }
 
     def set_lang(self, lang):
@@ -194,6 +196,16 @@ class Api:
             return None
         notes = sysutil.release_notes(config.APP_VERSION)
         return {"version": config.APP_VERSION, "notes": notes} if notes else None
+
+    def set_discord(self, enabled):
+        enabled = bool(enabled)
+        self.settings["discord_rpc"] = enabled
+        sysutil.save_settings(self.settings)
+        if enabled:
+            presence.start()
+        else:
+            presence.stop()
+        return enabled
 
     def save_setting(self, key, val):
         self.settings[key] = val
@@ -346,7 +358,8 @@ def main():
     tray = TrayHolder(api, window)
     window.events.closing += tray.on_closing
     preview_server.PreviewServer(lambda: api.engine.preview_jpeg(), PREVIEW_TOKEN).start()
-    presence.start()
+    if api.settings.get("discord_rpc", True):
+        presence.start()
     api.start_auto_update()
     webview.start()
 

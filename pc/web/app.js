@@ -21,6 +21,19 @@ function applyStrings() {
   $("usbLabel").textContent = S.usb_label;
   $("privacy").textContent = "🔒 " + S.privacy_note;
   $("statusCaption").textContent = S.status_caption;
+  $("setAppearanceTitle").textContent = S.setting_appearance;
+  $("setMotionTitle").textContent = S.setting_motion;
+  $("motionHelp").textContent = S.setting_motion_help;
+  $("motionSystem").textContent = S.motion_system;
+  $("motionFull").textContent = S.motion_full;
+  $("motionReduced").textContent = S.motion_reduced;
+  $("setGeneralTitle").textContent = S.setting_general;
+  $("settingsLabel").textContent = S.settings;
+  $("settingsTitle").textContent = S.settings;
+  $("setThemeTitle").textContent = S.setting_theme;
+  $("setLangTitle").textContent = S.setting_language;
+  $("discordTitle").textContent = S.setting_discord;
+  $("discordHelp").textContent = S.setting_discord_help;
   $("remoteLabel").textContent = S.remote_label || "Remote";
   $("remoteExp").textContent = S.remote_experimental || "Experimental";
   $("remoteHelp").textContent = S.remote_help || "";
@@ -35,13 +48,50 @@ function applyStrings() {
   $("qHighSub").textContent = S.q_high_sub || "";
 }
 
+let fadeTimer = null;
+
 function applyTheme(name) {
+  const root = document.documentElement;
+  root.classList.add("theme-fade");
+  clearTimeout(fadeTimer);
+  fadeTimer = setTimeout(() => root.classList.remove("theme-fade"), 420);
   theme = name || "default";
   if (theme === "default") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", theme);
-  document.querySelectorAll(".theme-dot").forEach((d) => {
-    d.classList.toggle("active", d.dataset.theme === theme);
+  document.querySelectorAll(".theme-card").forEach((d) => {
+    const on = d.dataset.theme === theme;
+    d.classList.toggle("active", on);
+    d.setAttribute("aria-pressed", on);
   });
+}
+
+function isReduced() {
+  const m = document.documentElement.dataset.motion;
+  return m === "reduced" || (m !== "full" && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+}
+
+function applyMotion(mode) {
+  document.documentElement.dataset.motion = mode;
+  document.querySelectorAll("#motionSeg button").forEach((b) => {
+    b.setAttribute("aria-pressed", b.dataset.motion === mode);
+  });
+}
+
+function runIntro() {
+  const el = $("intro");
+  if (!el) return;
+  if (isReduced()) { el.remove(); return; }
+  setTimeout(() => {
+    el.classList.add("out");
+    setTimeout(() => el.remove(), 320);
+  }, 1100);
+}
+
+function toggleSettings() {
+  const opening = $("settingsView").classList.contains("hidden");
+  $("settingsView").classList.toggle("hidden", !opening);
+  $("mainView").classList.toggle("hidden", opening);
+  $("navSettings").classList.toggle("active", opening);
 }
 
 function markQuality() {
@@ -85,8 +135,10 @@ function setPhoneApp(installed) {
   if (installed) {
     label.textContent = "✓ " + S.phone_ready;
     btn.classList.remove("warn");
+    btn.classList.add("ok");
   } else {
     label.textContent = S.btn_install;
+    btn.classList.remove("ok");
   }
 }
 
@@ -100,7 +152,7 @@ async function pollUsb() {
 
 function setLangButton(langs, current) {
   const t = langs.find((l) => l[0] === current) || langs[0];
-  $("langFlag").textContent = t[1];
+  $("langFlag").textContent = t[0].toUpperCase();
   $("langName").textContent = t[2];
 }
 
@@ -111,7 +163,7 @@ function buildLangMenu(langs, current) {
     const item = document.createElement("div");
     item.className = "lang-item" + (code === current ? " active" : "");
     item.innerHTML =
-      '<span class="lang-flag">' + flag + "</span><span>" + name + "</span>";
+      '<span class="lang-flag">' + code.toUpperCase() + "</span><span>" + name + "</span>";
     item.onclick = () => {
       $("langMenu").classList.add("hidden");
       setLang(code);
@@ -168,8 +220,10 @@ function refreshVcam() {
   if (CFG.vcam_ready) {
     label.textContent = "✓ " + S.vcam_ready;
     btn.classList.remove("warn");
+    btn.classList.add("ok");
   } else {
     label.textContent = S.install_vcam;
+    btn.classList.remove("ok");
     btn.classList.add("warn");
   }
 }
@@ -193,6 +247,10 @@ async function init() {
   document.addEventListener("click", () => $("langMenu").classList.add("hidden"));
 
   $("collapseBtn").onclick = () => $("sidebar").classList.toggle("collapsed");
+  $("navSettings").onclick = toggleSettings;
+  $("settingsBack").onclick = toggleSettings;
+  $("discordChk").checked = boot.discord_rpc !== false;
+  $("discordChk").onchange = (e) => window.pywebview.api.set_discord(e.target.checked);
   $("navGithub").onclick = () => window.pywebview.api.open_url(CFG.github);
   $("navDiscord").onclick = () => window.pywebview.api.open_url(CFG.discord);
   $("navInsta").onclick = () => window.pywebview.api.open_url(CFG.instagram);
@@ -286,7 +344,17 @@ async function init() {
   quality = boot.remote_quality || "medium";
   markQuality();
   applyTheme(boot.theme);
-  document.querySelectorAll(".theme-dot").forEach((d) => {
+  applyMotion(boot.motion || "system");
+  runIntro();
+  $("aboutVersion").textContent = "v" + boot.version;
+  $("aboutGithub").onclick = () => window.pywebview.api.open_url(CFG.github);
+  document.querySelectorAll("#motionSeg button").forEach((b) => {
+    b.onclick = () => {
+      applyMotion(b.dataset.motion);
+      window.pywebview.api.save_setting("motion", b.dataset.motion);
+    };
+  });
+  document.querySelectorAll(".theme-card").forEach((d) => {
     d.onclick = () => {
       applyTheme(d.dataset.theme);
       window.pywebview.api.save_setting("theme", theme);
@@ -328,3 +396,4 @@ function showWhatsNew(info) {
 window.flexStatus = setStatus;
 window.flexUpdate = setUpdate;
 window.addEventListener("pywebviewready", init);
+setTimeout(() => { const i = $("intro"); if (i) i.remove(); }, 4500);

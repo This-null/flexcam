@@ -23,6 +23,7 @@ source is unaffected.
 | [websockets](https://github.com/python-websockets/websockets) | 17.1 | BSD-3-Clause |
 | [qrcode](https://github.com/lincolnloop/python-qrcode) | 8.2 | BSD-3-Clause |
 | [cloudflared](https://github.com/cloudflare/cloudflared) | 2026.8.3 | Apache-2.0 |
+| [Source Sans Pro](https://github.com/adobe-fonts/source-sans) | 2.021 | OFL-1.1 |
 | [Unity Capture](https://github.com/schellingb/UnityCapture) filter | — | MIT |
 | Android Debug Bridge (`adb`) | — | Android SDK terms |
 
@@ -41,6 +42,10 @@ source is unaffected.
 Unity Capture is Copyright (c) 2018 Bernhard Schelling, based on UnityCam,
 Copyright (c) 2016 MHD Yamen Saraiji. Its full license text ships with the
 application in `virtualcam/LICENSE-UnityCapture.txt`.
+
+Source Sans Pro is Copyright 2010, 2012, 2014 Adobe Systems Incorporated, with Reserved
+Font Name "Source". It is bundled unmodified, and its license text ships with the
+application in `web/fonts/OFL.txt`.
 
 `cloudflared` is bundled to provide the optional remote-connection mode. It is
 started only while that mode is running and is terminated when it stops. See

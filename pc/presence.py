@@ -1,7 +1,9 @@
 import threading
-import time
 
 import config
+
+_stop = threading.Event()
+_thread = None
 
 
 def _payload(start):
@@ -19,33 +21,54 @@ def _payload(start):
     )
 
 
+def _update(rpc, start):
+    data = _payload(start)
+    try:
+        rpc.update(**data)
+    except TypeError:
+        data.pop("large_url", None)
+        try:
+            rpc.update(**data)
+        except TypeError:
+            data.pop("buttons", None)
+            rpc.update(**data)
+
+
 def _run():
+    import time
     try:
         from pypresence import Presence
     except Exception:
         return
     if not config.DISCORD_CLIENT_ID:
         return
-    while True:
+    while not _stop.is_set():
+        rpc = None
         try:
             rpc = Presence(config.DISCORD_CLIENT_ID)
             rpc.connect()
-            start = int(time.time())
-            data = _payload(start)
-            try:
-                rpc.update(**data)
-            except TypeError:
-                data.pop("large_url", None)
-                try:
-                    rpc.update(**data)
-                except TypeError:
-                    data.pop("buttons", None)
-                    rpc.update(**data)
-            while True:
-                time.sleep(15)
+            _update(rpc, int(time.time()))
+            while not _stop.wait(15):
+                pass
         except Exception:
-            time.sleep(30)
+            _stop.wait(30)
+        finally:
+            if rpc is not None:
+                try:
+                    rpc.clear()
+                    rpc.close()
+                except Exception:
+                    pass
 
 
 def start():
-    threading.Thread(target=_run, daemon=True).start()
+    global _thread
+    if _thread is not None and _thread.is_alive():
+        return
+    _stop.clear()
+    _thread = threading.Thread(target=_run, daemon=True)
+    _thread.start()
+
+
+def stop():
+    _stop.set()
