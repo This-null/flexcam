@@ -28,6 +28,21 @@ function applyStrings() {
   $("motionFull").textContent = S.motion_full;
   $("motionReduced").textContent = S.motion_reduced;
   $("setGeneralTitle").textContent = S.setting_general;
+  $("navHomeLabel").textContent = S.nav_home;
+  $("navEffectsLabel").textContent = S.nav_effects;
+  $("effectsTitle").textContent = S.effects_title;
+  $("fxPresetsTitle").textContent = S.effects_presets;
+  $("fxAdjustTitle").textContent = S.effects_adjust;
+  document.querySelectorAll(".preset-card").forEach((c) => {
+    c.querySelector(".name").textContent = S["fx_" + c.dataset.preset];
+  });
+  document.querySelectorAll("[data-fxlabel]").forEach((e) => {
+    e.textContent = S["fx_" + e.dataset.fxlabel];
+  });
+  $("fxMirrorTitle").textContent = S.fx_mirror;
+  $("fxMirrorHelp").textContent = S.fx_mirror_help;
+  $("fxResetLabel").textContent = S.fx_reset;
+  $("fxNote").textContent = S.fx_note;
   $("settingsLabel").textContent = S.settings;
   $("settingsTitle").textContent = S.settings;
   $("setThemeTitle").textContent = S.setting_theme;
@@ -87,11 +102,99 @@ function runIntro() {
   }, 1100);
 }
 
-function toggleSettings() {
-  const opening = $("settingsView").classList.contains("hidden");
-  $("settingsView").classList.toggle("hidden", !opening);
-  $("mainView").classList.toggle("hidden", opening);
-  $("navSettings").classList.toggle("active", opening);
+const PAGES = { home: "mainView", effects: "cameraView", settings: "settingsView" };
+let currentPage = "home";
+let previewUrl = "";
+
+function showPage(name) {
+  currentPage = name;
+  for (const [k, id] of Object.entries(PAGES)) $(id).classList.toggle("hidden", k !== name);
+  document.querySelectorAll(".page-item").forEach((b) => {
+    const on = b.dataset.page === name;
+    b.classList.toggle("active", on);
+    if (on) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current");
+  });
+  if (name === "effects" && previewUrl) $("fxPreview").src = previewUrl;
+  else $("fxPreview").removeAttribute("src");
+}
+
+const FX_KEYS = ["brightness", "contrast", "saturation", "warmth", "shadows", "sharpness"];
+let fx = { params: {}, preset: "original", presets: {} };
+let fxTimer = null;
+
+function renderFx() {
+  FX_KEYS.forEach((k) => {
+    const r = document.querySelector('[data-fx="' + k + '"]');
+    r.value = fx.params[k] || 0;
+    r.nextElementSibling.textContent = r.value;
+  });
+  $("fxMirror").checked = !!fx.params.mirror;
+  document.querySelectorAll(".preset-card").forEach((c) => {
+    const on = c.dataset.preset === fx.preset;
+    c.classList.toggle("active", on);
+    c.setAttribute("aria-pressed", on);
+  });
+}
+
+function pushFx() {
+  clearTimeout(fxTimer);
+  fxTimer = setTimeout(() => window.pywebview.api.set_effects(fx.params, fx.preset), 60);
+}
+
+function initFx(data) {
+  fx = { params: data.params, preset: data.preset, presets: data.presets };
+  FX_KEYS.forEach((k) => {
+    document.querySelector('[data-fx="' + k + '"]').oninput = (e) => {
+      fx.params[k] = Number(e.target.value);
+      fx.preset = "";
+      renderFx();
+      pushFx();
+    };
+  });
+  $("fxMirror").onchange = (e) => {
+    fx.params.mirror = e.target.checked;
+    fx.preset = "";
+    renderFx();
+    pushFx();
+  };
+  document.querySelectorAll(".preset-card").forEach((c) => {
+    c.onclick = () => {
+      fx.params = Object.assign({}, fx.presets[c.dataset.preset], { mirror: !!fx.params.mirror });
+      fx.preset = c.dataset.preset;
+      renderFx();
+      pushFx();
+    };
+  });
+  $("fxReset").onclick = () => {
+    fx.params = Object.assign({}, fx.presets.original);
+    fx.preset = "original";
+    renderFx();
+    pushFx();
+  };
+  renderFx();
+}
+
+function setFxBar(bar, pct) {
+  let fill = bar.firstElementChild;
+  if (!fill) {
+    fill = document.createElement("span");
+    fill.className = "fxbar-fill";
+    bar.appendChild(fill);
+  }
+  const p = Math.max(0, Math.min(100, pct));
+  fill.style.width = p > 0 ? "calc(max(" + p + "%, 12px) - 4px)" : "0";
+}
+
+function setRemoteText(text, fxName) {
+  $("remoteState").textContent = text;
+  const i = $("remoteFx");
+  if (fxName) {
+    i.src = "fx/" + fxName;
+    i.classList.remove("hidden");
+  } else {
+    i.classList.add("hidden");
+    i.removeAttribute("src");
+  }
 }
 
 function markQuality() {
@@ -112,20 +215,19 @@ function setRemoteUi(on) {
 }
 
 window.flexRemote = function (state, detail) {
-  const el = $("remoteState");
-  if (!el) return;
-  if (state === "starting") el.textContent = S.remote_starting || "Starting tunnel...";
-  else if (state === "ready") el.textContent = S.remote_waiting || "Waiting for phone...";
-  else if (state === "connected") el.textContent = S.remote_connected || "Phone connected";
-  else if (state === "stopped") el.textContent = "";
+  if (!$("remoteState")) return;
+  if (state === "starting") setRemoteText(S.remote_starting || "Starting tunnel...", "spinner.gif");
+  else if (state === "ready") setRemoteText(S.remote_waiting || "Waiting for phone...", "");
+  else if (state === "connected") setRemoteText(S.remote_connected || "Phone connected", "bolt.gif");
+  else if (state === "stopped") setRemoteText("", "");
   else if (state === "error") {
-    el.textContent = (S["remote_" + detail] || S.remote_failed || "Failed");
+    setRemoteText(S["remote_" + detail] || S.remote_failed || "Failed", "");
     setRemoteUi(false);
   }
 };
 
 function setUsb(connected) {
-  $("usbDot").classList.toggle("on", !!connected);
+  $("usbDot").src = "fx/dot-" + (connected ? "online" : "off") + ".png";
   $("usbState").textContent = connected ? S.usb_connected : S.usb_disconnected;
 }
 
@@ -133,7 +235,7 @@ function setPhoneApp(installed) {
   const label = $("installLabel");
   const btn = $("installBtn");
   if (installed) {
-    label.textContent = "✓ " + S.phone_ready;
+    label.textContent = S.phone_ready;
     btn.classList.remove("warn");
     btn.classList.add("ok");
   } else {
@@ -218,7 +320,7 @@ function refreshVcam() {
   const label = $("obsLabel");
   const btn = $("obsBtn");
   if (CFG.vcam_ready) {
-    label.textContent = "✓ " + S.vcam_ready;
+    label.textContent = S.vcam_ready;
     btn.classList.remove("warn");
     btn.classList.add("ok");
   } else {
@@ -226,6 +328,7 @@ function refreshVcam() {
     btn.classList.remove("ok");
     btn.classList.add("warn");
   }
+  $("obsTile").innerHTML = icon(CFG.vcam_ready ? "webcam" : "triangle-alert", 18);
 }
 
 async function init() {
@@ -247,8 +350,10 @@ async function init() {
   document.addEventListener("click", () => $("langMenu").classList.add("hidden"));
 
   $("collapseBtn").onclick = () => $("sidebar").classList.toggle("collapsed");
-  $("navSettings").onclick = toggleSettings;
-  $("settingsBack").onclick = toggleSettings;
+  document.querySelectorAll(".page-item").forEach((b) => {
+    b.onclick = () => showPage(b.dataset.page);
+  });
+  $("settingsBack").onclick = () => showPage("home");
   $("discordChk").checked = boot.discord_rpc !== false;
   $("discordChk").onchange = (e) => window.pywebview.api.set_discord(e.target.checked);
   $("navGithub").onclick = () => window.pywebview.api.open_url(CFG.github);
@@ -299,16 +404,16 @@ async function init() {
     if (remoteOn) {
       await window.pywebview.api.remote_stop();
       setRemoteUi(false);
-      $("remoteState").textContent = "";
+      setRemoteText("", "");
       return;
     }
     $("remoteBtn").disabled = true;
-    $("remoteState").textContent = S.remote_starting || "Starting tunnel...";
+    setRemoteText(S.remote_starting || "Starting tunnel...", "spinner.gif");
     $("remotePair").classList.remove("hidden");
     const r = await window.pywebview.api.remote_start(quality);
     $("remoteBtn").disabled = false;
     if (!r || !r.ok) {
-      $("remoteState").textContent = S.remote_failed || "Could not start";
+      setRemoteText(S.remote_failed || "Could not start", "");
       $("remotePair").classList.add("hidden");
       return;
     }
@@ -338,7 +443,8 @@ async function init() {
   pollUsb();
   setInterval(pollUsb, 3000);
 
-  $("previewImg").src = "http://127.0.0.1:8475/preview?t=" + encodeURIComponent(boot.preview_token);
+  previewUrl = "http://127.0.0.1:8475/preview?t=" + encodeURIComponent(boot.preview_token);
+  $("previewImg").src = previewUrl;
   $("wifiIp").value = boot.wifi_ip || "";
   $("wifiKey").value = boot.wifi_key || "";
   quality = boot.remote_quality || "medium";
@@ -347,6 +453,7 @@ async function init() {
   applyMotion(boot.motion || "system");
   runIntro();
   $("aboutVersion").textContent = "v" + boot.version;
+  initFx(boot.effects);
   $("aboutGithub").onclick = () => window.pywebview.api.open_url(CFG.github);
   document.querySelectorAll("#motionSeg button").forEach((b) => {
     b.onclick = () => {
@@ -371,16 +478,33 @@ function setUpdate(state, pct, latest) {
   if (!b) return;
   b.classList.remove("hidden");
   b.onclick = null;
+  b.textContent = "";
+  const fxImg = (src) => {
+    const i = document.createElement("img");
+    i.className = "fx";
+    i.src = "fx/" + src;
+    i.width = 16;
+    i.height = 16;
+    i.alt = "";
+    return i;
+  };
+  const label = (t) => {
+    const s = document.createElement("span");
+    s.textContent = t;
+    return s;
+  };
   if (state === "downloading") {
-    b.textContent = (S.update_downloading || "Downloading update {}%")
-      .replace("{}", pct);
+    b.append(fxImg("arrow.gif"), label((S.update_downloading || "Downloading update {}%").replace("{}", pct)));
+    const bar = document.createElement("span");
+    bar.className = "fxbar";
+    b.appendChild(bar);
+    setFxBar(bar, pct);
   } else if (state === "waiting") {
-    b.textContent = S.update_waiting || "Update ready — installs after streaming";
+    b.append(label(S.update_waiting || "Update ready, installs after streaming"));
   } else if (state === "installing") {
-    b.textContent = S.update_installing || "Installing update...";
+    b.append(fxImg("burst.gif"), label(S.update_installing || "Installing update..."));
   } else {
-    b.textContent = (S.update_available || "Update available: v{}")
-      .replace("{}", latest);
+    b.append(label((S.update_available || "Update available: v{}").replace("{}", latest)));
     b.onclick = () => window.pywebview.api.open_url(updateUrl || CFG.github);
   }
 }
@@ -393,6 +517,7 @@ function showWhatsNew(info) {
   $("whatsNewClose").onclick = () => $("whatsNew").classList.add("hidden");
 }
 
+hydrateIcons();
 window.flexStatus = setStatus;
 window.flexUpdate = setUpdate;
 window.addEventListener("pywebviewready", init);

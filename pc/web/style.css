@@ -929,3 +929,111 @@ html.theme-fade, html.theme-fade * {
   animation-iteration-count: 1 !important;
   transition-duration: 0.01ms !important;
 }
+
+.pages { gap: 4px; }
+.page-item { height: 44px; padding: 0 8px; border-radius: 12px; font-weight: 500; }
+.page-item .tile { width: 28px; height: 28px; border-radius: 8px; background: var(--card); color: var(--muted); transition: background-color 0.15s, color 0.15s; }
+.page-item:hover .tile { color: var(--fg); }
+.page-item.active {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--fg);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.page-item.active .tile { background: var(--accent); color: var(--on-accent); }
+
+.links { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+.sidebar .links > :nth-child(1) { --i: 3; }
+.sidebar .links > :nth-child(2) { --i: 4; }
+.sidebar .links > :nth-child(3) { --i: 5; }
+.sidebar .links > :nth-child(4) { --i: 6; }
+.sidebar .side-bottom > :nth-child(1) { --i: 7; }
+.sidebar .side-bottom > :nth-child(2) { --i: 8; }
+.sidebar .side-bottom > :nth-child(3) { --i: 9; }
+
+.side-bottom .side-btn { padding: 6px 8px; }
+.ok-badge { display: none; flex-shrink: 0; margin-left: auto; }
+.side-btn.ok .ok-badge { display: block; }
+.sidebar.collapsed .ok-badge { display: none; }
+.side-btn.ok .tile { background: color-mix(in srgb, var(--green) 16%, transparent); color: var(--green); }
+
+.fx { display: inline-block; flex-shrink: 0; vertical-align: middle; pointer-events: none; user-select: none; }
+.fx-dot { flex-shrink: 0; pointer-events: none; }
+.remote-state { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.modal-head { display: flex; align-items: center; gap: 12px; }
+.update-badge { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
+
+.fxbar {
+  position: relative;
+  display: block;
+  flex-basis: 100%;
+  height: 12px;
+  overflow: hidden;
+  border-radius: 4px;
+  background-image: url("fx/bar-r.png"), url("fx/bar-l.png"), url("fx/bar-m.png");
+  background-size: auto 12px, auto 12px, auto 12px;
+  background-position: right 0 center, 0 center, center;
+  background-repeat: no-repeat, no-repeat, repeat-x;
+}
+.fxbar-fill {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 0;
+  background-image: url("fx/fill-r.webp"), url("fx/fill-l.webp"), url("fx/fill-m.webp");
+  background-size: auto 12px, auto 12px, auto 12px;
+  background-position: right -2px center, -2px center, center;
+  background-repeat: no-repeat, no-repeat, repeat-x;
+}
+
+.main.camera { align-items: stretch; justify-content: flex-start; }
+.fx-preview { max-width: 100%; aspect-ratio: 16 / 9; }
+
+.preset-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 8px; }
+.preset-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s, transform 0.2s var(--ease-out);
+}
+.preset-card:hover { background: var(--card-hover); transform: translateY(-2px); }
+.preset-card:active { transform: translateY(0); }
+.preset-card.active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  font-weight: 600;
+}
+
+.slider-row { display: grid; grid-template-columns: 148px 1fr 40px; align-items: center; gap: 12px; font-size: 13px; }
+.slider-label { display: flex; align-items: center; gap: 8px; }
+.slider-label svg { color: var(--muted); flex-shrink: 0; }
+.slider-row input[type="range"] { width: 100%; accent-color: var(--accent); }
+.slider-row output { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+.main input[type="range"]:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; border-radius: 4px; }
+
+.fx-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.ghost-btn:hover { background: var(--card-hover); }

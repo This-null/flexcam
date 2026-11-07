@@ -13,6 +13,7 @@ import adb_tools
 import sysutil
 import config
 import i18n
+import effects
 import presence
 import preview_server
 import remote
@@ -48,6 +49,7 @@ class Api:
         self._connected = False
         self._pending = None
         self._remote = None
+        self.engine.set_effects(self.settings.get("effects", {}))
 
     def _strings(self):
         strings = dict(i18n.STRINGS["en"])
@@ -77,6 +79,7 @@ class Api:
             "preview_token": PREVIEW_TOKEN,
             "discord_rpc": self.settings.get("discord_rpc", True),
             "motion": self.settings.get("motion", "system"),
+            "effects": self.get_effects(),
         }
 
     def set_lang(self, lang):
@@ -196,6 +199,21 @@ class Api:
             return None
         notes = sysutil.release_notes(config.APP_VERSION)
         return {"version": config.APP_VERSION, "notes": notes} if notes else None
+
+    def get_effects(self):
+        return {
+            "params": effects.normalize(self.settings.get("effects", {})),
+            "preset": self.settings.get("effects_preset", "original"),
+            "presets": {k: effects.preset(k) for k in effects.PRESETS},
+        }
+
+    def set_effects(self, params, preset_name=""):
+        p = effects.normalize(params)
+        self.engine.set_effects(p)
+        self.settings["effects"] = p
+        self.settings["effects_preset"] = preset_name if preset_name in effects.PRESETS else ""
+        sysutil.save_settings(self.settings)
+        return p
 
     def set_discord(self, enabled):
         enabled = bool(enabled)

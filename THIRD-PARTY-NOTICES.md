@@ -24,6 +24,8 @@ source is unaffected.
 | [qrcode](https://github.com/lincolnloop/python-qrcode) | 8.2 | BSD-3-Clause |
 | [cloudflared](https://github.com/cloudflare/cloudflared) | 2026.8.3 | Apache-2.0 |
 | [Source Sans Pro](https://github.com/adobe-fonts/source-sans) | 2.021 | OFL-1.1 |
+| [Lucide icons](https://lucide.dev) | 1.61.0 | ISC |
+| [Noto Emoji animations](https://googlefonts.github.io/noto-emoji-animation/) | latest | CC-BY-4.0 |
 | [Unity Capture](https://github.com/schellingb/UnityCapture) filter | — | MIT |
 | Android Debug Bridge (`adb`) | — | Android SDK terms |
 
@@ -46,6 +48,10 @@ application in `virtualcam/LICENSE-UnityCapture.txt`.
 Source Sans Pro is Copyright 2010, 2012, 2014 Adobe Systems Incorporated, with Reserved
 Font Name "Source". It is bundled unmodified, and its license text ships with the
 application in `web/fonts/OFL.txt`.
+
+The animated emoji in `web/emoji/` are Google Noto Emoji animations, licensed CC BY 4.0, resized to 128 px for this application.
+
+The animated interface graphics in `web/fx/` were supplied by the project owner. Their original creators are not documented, so no license is claimed for them here.
 
 `cloudflared` is bundled to provide the optional remote-connection mode. It is
 started only while that mode is running and is terminated when it stops. See

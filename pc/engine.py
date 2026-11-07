@@ -3,6 +3,11 @@ import time
 from http.client import HTTPConnection
 
 from mjpeg_client import MjpegParser
+from io import BytesIO
+
+from PIL import Image
+
+import effects
 from virtual_cam import VirtualCamera, jpeg_to_rgb
 import adb_tools
 
@@ -55,6 +60,7 @@ class FlexCamEngine:
         self._key = ""
         self._preview_jpeg = None
         self._remote_frame = None
+        self._fx = effects.normalize({})
 
     def is_running(self):
         return self._running
@@ -90,6 +96,21 @@ class FlexCamEngine:
         self._running = True
         self._thread = threading.Thread(target=self._remote_loop, daemon=True)
         self._thread.start()
+
+    def set_effects(self, params):
+        self._fx = effects.normalize(params)
+
+    def _emit(self, cam, jpeg):
+        fx = self._fx
+        rgb = jpeg_to_rgb(jpeg)
+        if effects.is_identity(fx):
+            self._preview_jpeg = jpeg
+        else:
+            rgb = effects.apply(rgb, fx)
+            buf = BytesIO()
+            Image.fromarray(rgb).save(buf, "JPEG", quality=80)
+            self._preview_jpeg = buf.getvalue()
+        cam.send(rgb)
 
     def push_frame(self, jpeg):
         self._remote_frame = jpeg
@@ -128,8 +149,7 @@ class FlexCamEngine:
                 if not active:
                     active = True
                     self._on_status("connected", "Remote", "")
-                self._preview_jpeg = jpeg
-                cam.send(jpeg_to_rgb(jpeg))
+                self._emit(cam, jpeg)
         finally:
             cam.close()
             self._remote_frame = None
@@ -164,8 +184,7 @@ class FlexCamEngine:
                             active = src["name"]
                             self._active_host = src["host"]
                             self._on_status("connected", active, "")
-                        self._preview_jpeg = jpeg
-                        cam.send(jpeg_to_rgb(jpeg))
+                        self._emit(cam, jpeg)
                     active = None
                     self._preview_jpeg = None
                 except AuthError:
