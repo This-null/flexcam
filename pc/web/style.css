@@ -235,7 +235,7 @@ body {
 .nav-item.active { background: var(--card); color: var(--fg); }
 
 .main.settings { align-items: stretch; justify-content: flex-start; }
-.settings-card {
+.settings-stack {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -735,7 +735,7 @@ html[data-theme="grape"] {
   --bg: #17121f; --sidebar: #110d17; --card: #221a2e; --card-hover: #2f2440;
   --fg: #ece5f5; --muted: #a595b9; --accent: #a855f7; --accent-hover: #b96ff8; --on-accent: #14061f;
   --line: rgba(255, 255, 255, 0.07);
-  --bg-image: radial-gradient(900px 540px at 100% 0%, rgba(168, 85, 247, 0.22), transparent 62%), radial-gradient(700px 500px at 0% 100%, rgba(236, 72, 153, 0.1), transparent 62%);
+  --bg-image: radial-gradient(900px 540px at 100% 0%, rgba(168, 85, 247, 0.22), transparent 62%), radial-gradient(700px 500px at 0% 100%, rgba(168, 85, 247, 0.1), transparent 62%);
 }
 html[data-theme="light"] {
   --bg: #f4f5f9; --sidebar: #eaecf3; --card: #ffffff; --card-hover: #eef0f6;
@@ -824,18 +824,18 @@ html[data-theme="light"] .main::-webkit-scrollbar-thumb {
   to { transform: scaleX(1); }
 }
 
-.main > *, .settings-card > * {
+.main > *, .settings-stack > * {
   animation: enter-rise 320ms var(--ease-out) backwards;
   animation-delay: calc(var(--i, 0) * 45ms);
 }
-.main > :nth-child(1), .settings-card > :nth-child(1) { --i: 0; }
-.main > :nth-child(2), .settings-card > :nth-child(2) { --i: 1; }
-.main > :nth-child(3), .settings-card > :nth-child(3) { --i: 2; }
-.main > :nth-child(4), .settings-card > :nth-child(4) { --i: 3; }
-.main > :nth-child(5), .settings-card > :nth-child(5) { --i: 4; }
-.main > :nth-child(6), .settings-card > :nth-child(6) { --i: 5; }
-.main > :nth-child(7), .settings-card > :nth-child(7) { --i: 6; }
-.main > :nth-child(n+8), .settings-card > :nth-child(n+8) { --i: 7; }
+.main > :nth-child(1), .settings-stack > :nth-child(1) { --i: 0; }
+.main > :nth-child(2), .settings-stack > :nth-child(2) { --i: 1; }
+.main > :nth-child(3), .settings-stack > :nth-child(3) { --i: 2; }
+.main > :nth-child(4), .settings-stack > :nth-child(4) { --i: 3; }
+.main > :nth-child(5), .settings-stack > :nth-child(5) { --i: 4; }
+.main > :nth-child(6), .settings-stack > :nth-child(6) { --i: 5; }
+.main > :nth-child(7), .settings-stack > :nth-child(7) { --i: 6; }
+.main > :nth-child(n+8), .settings-stack > :nth-child(n+8) { --i: 7; }
 
 .sidebar .nav > *, .sidebar .side-actions > *, .sidebar .side-bottom > * {
   animation: enter-rise 360ms var(--ease-out) backwards;
