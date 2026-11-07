@@ -8,6 +8,11 @@ object FrameBus {
     var jpeg: ByteArray? = null
 }
 
+object Control {
+    @Volatile
+    var rotation = -1
+}
+
 object Pin {
     private const val CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     private const val KEY = "pin"

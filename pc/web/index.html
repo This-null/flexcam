@@ -134,6 +134,27 @@
       <div class="preview-card fx-preview"><img id="fxPreview" class="preview-img" alt=""></div>
 
       <section class="set-card">
+        <h3 id="camTitle">Camera</h3>
+        <div class="set-block">
+          <div class="set-sub" id="camOrientTitle">Orientation</div>
+          <div class="seg" id="rotSeg" role="group">
+            <button type="button" data-rot="auto" id="rotAuto" aria-pressed="false">Auto</button>
+            <button type="button" data-rot="0" id="rotPortrait" aria-pressed="false">Portrait</button>
+            <button type="button" data-rot="90" id="rotLandscape" aria-pressed="false">Landscape</button>
+            <button type="button" data-rot="270" id="rotLandscapeRev" aria-pressed="false">Landscape reversed</button>
+          </div>
+        </div>
+        <div class="set-block">
+          <div class="set-sub" id="camLensTitle">Lens</div>
+          <div class="seg" id="camSeg" role="group">
+            <button type="button" data-cam="back" id="camBack" aria-pressed="false">Back</button>
+            <button type="button" data-cam="front" id="camFront" aria-pressed="false">Front</button>
+          </div>
+        </div>
+        <div class="set-help" id="camNote"></div>
+      </section>
+
+      <section class="set-card">
         <h3 id="fxPresetsTitle">Looks</h3>
         <div class="preset-grid" id="presetGrid">
           <button class="preset-card" type="button" data-preset="original" aria-pressed="false"><img src="emoji/original.webp" width="44" height="44" alt=""><span class="name">Original</span></button>

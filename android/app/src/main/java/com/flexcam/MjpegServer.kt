@@ -172,6 +172,14 @@ class MjpegServer(
                 strikes.remove(ip)
             }
 
+            if (path.startsWith("/ctl")) {
+                for (pair in query.split("&")) {
+                    val k = pair.substringBefore("=")
+                    if (k == "rot" || k == "cam") control(k + ":" + pair.substringAfter("=", ""))
+                }
+                reply(out, "200 OK", "OK")
+                return
+            }
             if (path.startsWith("/stop") || path.startsWith("/start")) {
                 control(if (path.startsWith("/stop")) "stop" else "start")
                 reply(out, "200 OK", "OK")

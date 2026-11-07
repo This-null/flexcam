@@ -32,7 +32,14 @@ class WebcamService : LifecycleService() {
         server = MjpegServer(
             Config.PORT,
             { capture.latestJpeg() },
-            { cmd -> if (cmd == "stop") capture.pause() else capture.resume() },
+            { cmd ->
+                when {
+                    cmd == "stop" -> capture.pause()
+                    cmd.startsWith("rot:") -> capture.setRotation(cmd.substring(4))
+                    cmd.startsWith("cam:") -> capture.setFacing(cmd.substring(4) == "front")
+                    else -> capture.resume()
+                }
+            },
             Pin.get(this),
         ).also { it.start() }
     }

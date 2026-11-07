@@ -29,6 +29,16 @@ function applyStrings() {
   $("motionReduced").textContent = S.motion_reduced;
   $("setGeneralTitle").textContent = S.setting_general;
   $("navHomeLabel").textContent = S.nav_home;
+  $("camTitle").textContent = S.cam_title;
+  $("camOrientTitle").textContent = S.cam_orientation;
+  $("rotAuto").textContent = S.rot_auto;
+  $("rotPortrait").textContent = S.rot_portrait;
+  $("rotLandscape").textContent = S.rot_landscape;
+  $("rotLandscapeRev").textContent = S.rot_landscape_rev;
+  $("camLensTitle").textContent = S.cam_lens;
+  $("camBack").textContent = S.cam_back;
+  $("camFront").textContent = S.cam_front;
+  $("camNote").textContent = S.cam_note;
   $("navEffectsLabel").textContent = S.nav_effects;
   $("effectsTitle").textContent = S.effects_title;
   $("fxPresetsTitle").textContent = S.effects_presets;
@@ -172,6 +182,32 @@ function initFx(data) {
     pushFx();
   };
   renderFx();
+}
+
+let cam = { rot: "auto", cam: "back" };
+
+function renderCam() {
+  document.querySelectorAll("#rotSeg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.rot === cam.rot));
+  document.querySelectorAll("#camSeg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.cam === cam.cam));
+}
+
+function initCam(saved) {
+  cam = Object.assign(cam, saved);
+  document.querySelectorAll("#rotSeg button").forEach((b) => {
+    b.onclick = () => {
+      cam.rot = b.dataset.rot;
+      renderCam();
+      window.pywebview.api.camera_control("rot", cam.rot);
+    };
+  });
+  document.querySelectorAll("#camSeg button").forEach((b) => {
+    b.onclick = () => {
+      cam.cam = b.dataset.cam;
+      renderCam();
+      window.pywebview.api.camera_control("cam", cam.cam);
+    };
+  });
+  renderCam();
 }
 
 function setFxBar(bar, pct) {
@@ -454,6 +490,7 @@ async function init() {
   runIntro();
   $("aboutVersion").textContent = "v" + boot.version;
   initFx(boot.effects);
+  initCam(boot.camera);
   $("aboutGithub").onclick = () => window.pywebview.api.open_url(CFG.github);
   document.querySelectorAll("#motionSeg button").forEach((b) => {
     b.onclick = () => {

@@ -61,6 +61,7 @@ class FlexCamEngine:
         self._preview_jpeg = None
         self._remote_frame = None
         self._fx = effects.normalize({})
+        self._ctl = {}
 
     def is_running(self):
         return self._running
@@ -96,6 +97,31 @@ class FlexCamEngine:
         self._running = True
         self._thread = threading.Thread(target=self._remote_loop, daemon=True)
         self._thread.start()
+
+    CTL_VALUES = {
+        "rot": ("auto", "0", "90", "180", "270"),
+        "cam": ("front", "back"),
+    }
+
+    def set_controls(self, ctl):
+        self._ctl = {k: v for k, v in (ctl or {}).items() if v in self.CTL_VALUES.get(k, ())}
+
+    def send_control(self, **params):
+        host = self._active_host
+        clean = {k: v for k, v in params.items() if v in self.CTL_VALUES.get(k, ())}
+        if not host or not clean:
+            return False
+        q = "&".join(f"{k}={v}" for k, v in clean.items())
+        if self._key:
+            q += "&key=" + self._key
+        try:
+            conn = HTTPConnection(host, PORT, timeout=1.5)
+            conn.request("GET", "/ctl?" + q)
+            ok = conn.getresponse().status == 200
+            conn.close()
+            return ok
+        except Exception:
+            return False
 
     def set_effects(self, params):
         self._fx = effects.normalize(params)
@@ -184,6 +210,8 @@ class FlexCamEngine:
                             active = src["name"]
                             self._active_host = src["host"]
                             self._on_status("connected", active, "")
+                            if self._ctl:
+                                self.send_control(**self._ctl)
                         self._emit(cam, jpeg)
                     active = None
                     self._preview_jpeg = None

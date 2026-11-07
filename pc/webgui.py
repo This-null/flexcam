@@ -50,6 +50,7 @@ class Api:
         self._pending = None
         self._remote = None
         self.engine.set_effects(self.settings.get("effects", {}))
+        self.engine.set_controls(self.settings.get("camera", {}))
 
     def _strings(self):
         strings = dict(i18n.STRINGS["en"])
@@ -80,6 +81,7 @@ class Api:
             "discord_rpc": self.settings.get("discord_rpc", True),
             "motion": self.settings.get("motion", "system"),
             "effects": self.get_effects(),
+            "camera": {"rot": "auto", "cam": "back", **self.settings.get("camera", {})},
         }
 
     def set_lang(self, lang):
@@ -199,6 +201,16 @@ class Api:
             return None
         notes = sysutil.release_notes(config.APP_VERSION)
         return {"version": config.APP_VERSION, "notes": notes} if notes else None
+
+    def camera_control(self, key, value):
+        if value not in self.engine.CTL_VALUES.get(key, ()):
+            return False
+        cam = dict(self.settings.get("camera", {}))
+        cam[key] = value
+        self.settings["camera"] = cam
+        sysutil.save_settings(self.settings)
+        self.engine.set_controls(cam)
+        return self.engine.send_control(**{key: value})
 
     def get_effects(self):
         return {

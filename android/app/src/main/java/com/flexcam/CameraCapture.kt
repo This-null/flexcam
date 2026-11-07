@@ -33,6 +33,7 @@ class CameraCapture(
 
     private var lensFacing = CameraSelector.LENS_FACING_BACK
     @Volatile private var paused = false
+    @Volatile private var sensorRotation = Surface.ROTATION_0
 
     fun latestJpeg(): ByteArray? = if (paused) null else latest.get()
 
@@ -76,7 +77,7 @@ class CameraCapture(
                 } catch (_: Exception) {
                     false
                 }
-                val rotation = if (!autoRotate) {
+                val sensor = if (!autoRotate) {
                     Surface.ROTATION_0
                 } else when (orientation) {
                     in 60 until 120 -> Surface.ROTATION_270
@@ -85,11 +86,30 @@ class CameraCapture(
                     in 330..360, in 0 until 30 -> Surface.ROTATION_0
                     else -> return
                 }
+                sensorRotation = sensor
+                val rotation = if (Control.rotation >= 0) Control.rotation else sensor
                 if (a.targetRotation != rotation) {
                     a.targetRotation = rotation
                 }
             }
         }.also { if (it.canDetectOrientation()) it.enable() }
+    }
+
+    fun setRotation(mode: String) {
+        Control.rotation = when (mode) {
+            "0" -> Surface.ROTATION_0
+            "90" -> Surface.ROTATION_90
+            "180" -> Surface.ROTATION_180
+            "270" -> Surface.ROTATION_270
+            else -> -1
+        }
+        ContextCompat.getMainExecutor(context).execute {
+            analysis?.targetRotation = if (Control.rotation >= 0) Control.rotation else sensorRotation
+        }
+    }
+
+    fun setFacing(front: Boolean) {
+        if (front != isFront()) switchCamera()
     }
 
     fun switchCamera() {
@@ -105,7 +125,7 @@ class CameraCapture(
         ImageAnalysis.Builder()
             .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
             .setOutputImageFormat(ImageAnalysis.OUTPUT_IMAGE_FORMAT_YUV_420_888)
-            .setTargetRotation(Surface.ROTATION_0)
+            .setTargetRotation(if (Control.rotation >= 0) Control.rotation else sensorRotation)
             .setTargetResolution(Size(Quality.width, Quality.height))
             .build().also { a ->
                 a.setAnalyzer(executor) { image ->
